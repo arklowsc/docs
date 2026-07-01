@@ -3,3 +3,73 @@ title: "Expressions"
 description: ""
 hideFooterPagination: true
 ---
+
+An expression is the condition on a rule. It reads fields from the action and returns true or false.
+
+## Fields
+
+These fields are available during Destination/Lane Selection.
+
+| Field | Type | Reads |
+|---|---|---|
+| `payload` | object | the action payload |
+| `metadata` | object | the action metadata |
+| `tags` | map | the action's tags |
+| `variant` | string | the action variant |
+| `version` | integer | the action version |
+| `destination` | object | the selected destination, with `label`, `type`, and `tags` |
+| `destinations` | list | every linked destination, each with `label`, `type`, and `tags` |
+
+Read nested values with dots or an index. Spread an array with `[*]`.
+
+```
+payload.order.total
+tags.customer
+tags["customer"]
+destination.type
+destinations[*]
+```
+
+## Literals
+
+| Form | Example |
+|---|---|
+| String | `"gold"` |
+| Raw string | `r"^SKU-[0-9]+$"` |
+| Number | `100`, `-5`, `3.14` |
+| Boolean | `true`, `false` |
+| IP address | `10.0.0.1`, `::1` |
+| Range | `1..10` |
+| Inline set | `{"eu" "us"}` |
+| Named list | `$priority_tiers` |
+
+Use a range or an inline set with `in`. A range is inclusive. An inline set holds one type, with items separated by spaces. A named list comes from the action context. A raw string takes no escapes, which suits regex and wildcard patterns.
+
+## Functions
+
+| Function | Returns |
+|---|---|
+| `lower(s)` | the string in lowercase |
+| `upper(s)` | the string in uppercase |
+| `starts_with(s, prefix)` | true when `s` starts with the prefix |
+| `ends_with(s, suffix)` | true when `s` ends with the suffix |
+| `len(v)` | the length of a string, bytes, or array |
+| `substring(s, start, end)` | part of a string, with an optional end index |
+| `split(s, sep, limit)` | an array from a split string |
+| `join(arr, sep)` | a string from a joined array |
+| `concat(a, b, ...)` | one string or array from the inputs |
+| `has_key(map, key)` | true when the map holds the key |
+| `has_value(coll, value)` | true when the collection holds the value |
+| `any(arr)` | true when any item in a boolean array is true |
+| `all(arr)` | true when every item in a boolean array is true |
+| `to_string(v)` | a scalar as a string |
+| `lookup_json_string(json, key, ...)` | a string from inside a JSON document |
+| `lookup_json_integer(json, key, ...)` | an integer from inside a JSON document |
+| `regex_replace(s, pattern, repl)` | the string with the first regex match replaced |
+| `wildcard_replace(s, pattern, repl)` | the string with the first wildcard match replaced |
+| `url_decode(s)` | a URL-decoded string |
+| `encode_base64(v)` | the value as Base64 |
+| `decode_base64(s)` | the Base64 string decoded |
+| `remove_bytes(v, bytes)` | the value with the given bytes removed |
+| `sha256(v)` | a SHA-256 digest |
+| `uuidv4(bytes)` | a UUIDv4 from a byte source |

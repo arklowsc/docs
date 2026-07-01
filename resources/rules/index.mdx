@@ -4,6 +4,80 @@ description: ""
 hideFooterPagination: true
 ---
 
+A rule tests an action with an expression and applies an effect when the expression is true. Rules run during Destination/Lane Selection, before an action is dispatched.
+
+An expression reads these fields: `payload`, `metadata`, `tags`, `variant`, `version`, `destination`, and `destinations`. The [Expressions](/resources/rules/syntax/expressions) page covers each.
+
+## How rules run
+
+A rule belongs to one action definition. Before that action dispatches, Arklow evaluates the definition's active rules in priority order, lowest number first. The first rule whose expression is true applies its effect, and evaluation stops.
+
+Set the **Priority** to control order. The first match wins, so give more specific rules a lower number.
+
+## Effects
+
+The expression is the condition. The effect is what happens on a match.
+
+### Assign Tags
+
+Merges tags onto the action. Tags select the lane the action runs in.
+
+```
+payload.tier eq "gold"
+```
+
+Set **Effect** to **Assign Tags** and add a `priority` tag set to `high`.
+
+### Dispatch
+
+Routes the action to the linked destination whose tags match. Exactly one linked destination must match.
+
+```
+payload.region eq "eu"
+```
+
+Set **Effect** to **Dispatch** and add a `region` destination tag set to `eu`.
+
+### Skip
+
+Drops the action from this dispatch.
+
+```
+tags.env eq "test"
+```
+
+### Terminate
+
+Ends the action.
+
+```
+payload.amount le 0
+```
+
+## Add a rule
+
+Rules live on an action definition, in its **Flow** tab.
+
+<Steps>
+  <Step title="Open the action">
+    Open the action definition and select the **Flow** tab.
+  </Step>
+  <Step title="Open the rules">
+    Open **Dispatch Rules** from the rules node, then click **Add rule**.
+  </Step>
+  <Step title="Write the rule">
+    Enter a **Name** and an **Expression**, pick an **Effect**, and set a **Priority**.
+  </Step>
+  <Step title="Configure the effect">
+    For **Assign Tags**, fill **Tags to assign**. For **Dispatch**, fill **Destination tags to match**.
+  </Step>
+  <Step title="Save">
+    Click **Create**.
+  </Step>
+</Steps>
+
+## Reference
+
 <Columns cols={2}>
   <Card
     title="Expressions"

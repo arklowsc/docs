@@ -2,3 +2,33 @@
 title: "Pub/Sub"
 hideFooterPagination: true
 ---
+
+The Pub/Sub destination delivers work to a Google Cloud Pub/Sub topic.
+
+## Credentials
+
+Uses a [GCP Service Account credential](/resources/credentials/gcp/service-account).
+
+## Add Pub/Sub to Arklow
+
+<Steps>
+  <Step title="Open the destinations page">
+    Go to [**Destinations**](https://app.arklow.io/dashboard/destinations) and click **New destination**.
+  </Step>
+  <Step title="Pick the type">
+    Set **Destination Type** to **Google Pub/Sub**.
+  </Step>
+  <Step title="Configure the topic">
+    Enter the **Project ID** and **Topic ID**.
+  </Step>
+  <Step title="Select the credential">
+    Under **Authentication**, select the GCP Service Account credential.
+  </Step>
+  <Step title="Save">
+    Click **Create destination**.
+  </Step>
+</Steps>
+
+## Special Notes
+
+N/A

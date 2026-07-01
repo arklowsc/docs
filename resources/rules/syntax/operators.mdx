@@ -3,3 +3,34 @@ title: "Operators"
 description: ""
 hideFooterPagination: true
 ---
+
+You can write an operator as a word or a symbol. Arklow stores the word form, so `>=` is saved and shown as `ge`.
+
+## Comparison
+
+| Operator | Meaning | Example |
+|---|---|---|
+| `eq` `==` | equal | `variant eq "orders.created"` |
+| `ne` `!=` | not equal | `payload.status ne "void"` |
+| `lt` `<` | less than | `payload.total lt 100` |
+| `le` `<=` | less than or equal | `payload.total le 100` |
+| `gt` `>` | greater than | `payload.total gt 100` |
+| `ge` `>=` | greater than or equal | `payload.total ge 100` |
+| `contains` | holds a substring | `payload.email contains "@acme.com"` |
+| `wildcard` | matches a wildcard pattern, ignoring case | `tags.channel wildcard "ops-*"` |
+| `strict wildcard` | matches a wildcard pattern, with case | `tags.channel strict wildcard "Ops-*"` |
+| `matches` `~` | matches a regular expression | `payload.sku matches "^SKU-[0-9]+$"` |
+| `in` | is a member of a list or set | `payload.region in {"eu" "us"}` |
+
+## Logical
+
+- `not`, `!`: negation
+- `and`, `&&`: both sides true
+- `xor`, `^^`: exactly one side true
+- `or`, `||`: either side true
+
+`not` binds tightest, then comparisons, then `and`, then `xor`, then `or`. Use parentheses to override the order.
+
+```
+payload.tier eq "gold" and (payload.region eq "eu" or payload.region eq "uk")
+```
