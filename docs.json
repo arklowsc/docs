@@ -8,6 +8,9 @@
     "dark": "#15803D"
   },
   "favicon": "/favicon.svg",
+  "styling": {
+    "eyebrows": "breadcrumbs"
+  },
   "navigation": {
     "tabs": [
       {
@@ -22,64 +25,126 @@
             ]
           },
           {
-            "group": "Customization",
+            "group": "Fundamentals",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "fundamentals/quickstart",
+              "fundamentals/FAQ",
+              "fundamentals/engine"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Resources",
+            "root": "resources/index",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              {
+                "group": "Sources",
+                "root": "resources/sources/index",
+                "pages": [
+                  {
+                    "group": "Arklow",
+                    "root": "resources/sources/arklow/index",
+                    "pages": [
+                      "resources/sources/arklow/ingress"
+                    ]
+                  },
+                  {
+                    "group": "AWS",
+                    "root": "resources/sources/aws/index",
+                    "pages": [
+                      "resources/sources/aws/sqs"
+                    ]
+                  },
+                  {
+                    "group": "GCP",
+                    "root": "resources/sources/gcp/index",
+                    "pages": [
+                      "resources/sources/gcp/pubsub"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Destinations",
+                "root": "resources/destinations/index",
+                "pages": [
+                  {
+                    "group": "AWS",
+                    "root": "resources/destinations/aws/index",
+                    "pages": [
+                      "resources/destinations/aws/sqs"
+                    ]
+                  },
+                  {
+                    "group": "GCP",
+                    "root": "resources/destinations/gcp/index",
+                    "pages": [
+                      "resources/destinations/gcp/pubsub"
+                    ]
+                  },
+                  "resources/destinations/sdk/index"
+                ]
+              },
+              {
+                "group": "Credentials",
+                "root": "resources/credentials/index",
+                "pages": [
+                  {
+                    "group": "HTTP",
+                    "root": "resources/credentials/http/index",
+                    "pages": [
+                      "resources/credentials/http/auth-headers"
+                    ]
+                  },
+                  {
+                    "group": "AWS",
+                    "root": "resources/credentials/aws/index",
+                    "pages": [
+                      "resources/credentials/aws/access-keys"
+                    ]
+                  },
+                  {
+                    "group": "GCP",
+                    "root": "resources/credentials/gcp/index",
+                    "pages": [
+                      "resources/credentials/gcp/service-account"
+                    ]
+                  },
+                  "resources/credentials/datadog/index"
+                ]
+              },
+              "resources/lanes/index",
+              {
+                "group": "Rules",
+                "root": "resources/rules/index",
+                "pages": [
+                  {
+                    "group": "Syntax",
+                    "pages": [
+                      "resources/rules/syntax/expressions",
+                      "resources/rules/syntax/operators"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Metrics",
+                "root": "resources/metrics/index",
+                "pages": [
+                  "resources/metrics/datadog/index",
+                  "resources/metrics/prometheus/index"
+                ]
+              }
             ]
           }
         ]
       },
       {
         "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
-        ]
+        "openapi": "https://api.arklow.io/swagger/ui/json"
       }
     ],
     "global": {
       "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
       ]
     }
   },
@@ -88,16 +153,11 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
+    "links": [],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "href": "https://api.arklow.io"
     }
   },
   "contextual": {
@@ -111,12 +171,5 @@
      "cursor",
      "vscode"
    ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
   }
 }
