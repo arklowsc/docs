@@ -3,3 +3,47 @@ title: "Lanes"
 description: ""
 hideFooterPagination: true
 ---
+
+A lane is the unit of dispatch control: one destination, one combination of tag values, within your org. Every lane holds its own limits.
+
+## Tags
+
+Tags create lanes. For example, an action tagged `{"region": "eu"}` and an action tagged `{"region": "us"}` dispatch through different lanes of the same destination. An action with no tags dispatches through the destination's default lane.
+
+Tags come from:
+
+* The ingress body's `tags` field.
+* `tag.<key>` query parameters on ingress.
+* A [rule](/resources/rules/index) with the **Assign Tags** effect.
+
+## Isolation
+
+Lanes adjust independently. A tenant overwhelming the `{"customer": "acme"}` lane has no effect on the limits of `{"customer": "initech"}`. Tag by dimensions that separate failure domains, such as tenant or region.
+
+## Limits
+
+Each lane carries two limits:
+
+* **Running limit**: the number of deliveries in flight.
+* **Unsettled limit**: the number of deliveries awaiting settlement.
+
+The limits start conservative and follow the destination.
+
+## Caps
+
+A cap pins a lane below what it would otherwise run at. The lanes API accepts a running cap and an unsettled cap, and the engine treats each as a ceiling. A running cap of `0` pauses the lane.
+
+## Cardinality
+
+Tags are for dimensions with a small set of values. An action definition can spread across a **maximum of 1000 lanes**. Ingress rejects work that would create more with `TAG_CARDINALITY_EXCEEDED`.
+
+## Reference
+
+<Columns cols={2}>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/actions/set-action-definition-lane-advice"
+  >
+  </Card>
+</Columns>

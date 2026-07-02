@@ -3,3 +3,36 @@ title: "Pub/Sub"
 description: ""
 hideFooterPagination: true
 ---
+
+The Pub/Sub source pulls work from a Google Cloud Pub/Sub subscription. Each message becomes one action: the message data is the payload.
+
+## Credentials
+
+Uses a [GCP Service Account credential](/resources/credentials/gcp/service-account).
+
+## Add Pub/Sub to Arklow
+
+<Steps>
+  <Step title="Open the sources page">
+    Go to [**Sources**](https://app.arklow.io/dashboard/sources) and click **Create source**.
+  </Step>
+  <Step title="Pick the type">
+    Set **Source Type** to **Google Pub/Sub**.
+  </Step>
+  <Step title="Configure the subscription">
+    Enter the **Project ID** and **Subscription ID**.
+  </Step>
+  <Step title="Choose the action">
+    Point the source's ingest at the action definition it feeds. Every message ingests under that variant.
+  </Step>
+  <Step title="Select the credential">
+    Under **Authentication**, select the GCP Service Account credential.
+  </Step>
+  <Step title="Save">
+    Click **Create source**.
+  </Step>
+</Steps>
+
+## Special Notes
+
+Actions are keyed to the source message, so a message redelivered by Pub/Sub does not create a second action.

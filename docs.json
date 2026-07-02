@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Arklow",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -20,16 +20,14 @@
             "group": "Getting started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "quickstart"
             ]
           },
           {
             "group": "Fundamentals",
             "pages": [
-              "fundamentals/quickstart",
-              "fundamentals/FAQ",
-              "fundamentals/engine"
+              "fundamentals/overview",
+              "fundamentals/FAQ"
             ]
           },
           {
@@ -67,6 +65,13 @@
                 "group": "Destinations",
                 "root": "resources/destinations/index",
                 "pages": [
+                  {
+                    "group": "HTTP",
+                    "root": "resources/destinations/http/index",
+                    "pages": [
+                      "resources/destinations/http/webhook"
+                    ]
+                  },
                   {
                     "group": "AWS",
                     "root": "resources/destinations/aws/index",

@@ -6,21 +6,21 @@ hideFooterPagination: true
 
 A rule tests an action with an expression and applies an effect when the expression is true. Rules run during Destination/Lane Selection, before an action is dispatched.
 
-An expression reads these fields: `payload`, `metadata`, `tags`, `variant`, `version`, `destination`, and `destinations`. The [Expressions](/resources/rules/syntax/expressions) page covers each.
+An expression reads the fields covered in [Expressions](/resources/rules/syntax/expressions): `payload`, `metadata`, `tags`, `variant`, `version`, `destination`, and `destinations`.
 
-## How rules run
+## Evaluation
 
 A rule belongs to one action definition. Before that action dispatches, Arklow evaluates the definition's active rules in priority order, lowest number first. The first rule whose expression is true applies its effect, and evaluation stops.
 
-Set the **Priority** to control order. The first match wins, so give more specific rules a lower number.
+**Priority** controls the order. Give more specific rules a lower number.
 
 ## Effects
 
-The expression is the condition. The effect is what happens on a match.
+A rule applies one of four effects.
 
 ### Assign Tags
 
-Merges tags onto the action. Tags select the lane the action runs in.
+Merges tags onto the action. Tags select the [lane](/resources/lanes/index) the action runs in.
 
 ```
 payload.tier eq "gold"
@@ -56,7 +56,7 @@ payload.amount le 0
 
 ## Add a rule
 
-Rules live on an action definition, in its **Flow** tab.
+Rules are managed on the action definition's **Flow** tab.
 
 <Steps>
   <Step title="Open the action">
@@ -89,6 +89,12 @@ Rules live on an action definition, in its **Flow** tab.
     title="Operators"
     icon="binary"
     href="/resources/rules/syntax/operators"
+  >
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/rules/list-rules"
   >
   </Card>
 </Columns>

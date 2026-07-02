@@ -3,3 +3,36 @@ title: "SQS"
 description: ""
 hideFooterPagination: true
 ---
+
+The SQS source pulls work from an Amazon SQS queue. Each message becomes one action: the message body is the payload.
+
+## Credentials
+
+Uses an [AWS credential](/resources/credentials/aws/access-keys).
+
+## Add SQS to Arklow
+
+<Steps>
+  <Step title="Open the sources page">
+    Go to [**Sources**](https://app.arklow.io/dashboard/sources) and click **Create source**.
+  </Step>
+  <Step title="Pick the type">
+    Set **Source Type** to **AWS SQS**.
+  </Step>
+  <Step title="Configure the queue">
+    Enter the **Queue URL** and select a **Region**.
+  </Step>
+  <Step title="Choose the action">
+    Point the source's ingest at the action definition it feeds. Every message ingests under that variant.
+  </Step>
+  <Step title="Select the credential">
+    Under **Authentication**, select the AWS credential.
+  </Step>
+  <Step title="Save">
+    Click **Create source**.
+  </Step>
+</Steps>
+
+## Special Notes
+
+Actions are keyed to the source message, so a message redelivered by SQS does not create a second action.

@@ -5,7 +5,9 @@ description: ""
 
 ## Introduction
 
-Arklow helps your infrastructure learn it's own capacity, protecting you from outages and overspend.
+Arklow helps your infrastructure learn its own capacity, protecting you from outages and overspend. This is called [Admission Control](https://en.wikipedia.org/wiki/Admission_control).
+
+You tell Arklow where outstanding work sits, and where it should land. Arklow watches how each destination handles its deliveries and releases work at the pace it can absorb. It slows down when a destination degrades and speeds back up as capacity returns.
 
 <Card
   title="Quick Start"
@@ -22,6 +24,13 @@ Here are some common guides that operators find useful.
 
 <Columns cols={2}>
   <Card
+    title="How Arklow Works"
+    icon="puzzle-piece"
+    href="/fundamentals/overview"
+  >
+    The path workloads take from Source to Destination.
+  </Card>
+  <Card
     title="Sources"
     icon="truck-ramp-box"
     href="/resources/sources/index"
@@ -31,30 +40,23 @@ Here are some common guides that operators find useful.
   <Card
     title="Deliver Work"
     icon="truck-fast"
-    href="/essentials/settings"
+    href="/resources/destinations/index"
   >
     Setup the SDK listener, or tell Arklow where to send work that's ready.
   </Card>
     <Card
     title="Feeding Metrics"
     icon="dolly"
-    href="/essentials/navigation"
+    href="/resources/metrics/index"
   >
     Arklow can read your existing metrics across multiple different providers to improve its understanding and decision making.
   </Card>
   <Card
     title="Lanes & Rules"
     icon="road"
-    href="/api-reference/introduction"
+    href="/resources/lanes/index"
   >
     An introduction to Lanes and using our Rules Engine.
-  </Card>
-  <Card
-    title="Arklow's Engine"
-    icon="arrows-spin"
-    href="/api-reference/introduction"
-  >
-    A high-level overview of how Arklow's engine makes decisions.
   </Card>
 </Columns>
 

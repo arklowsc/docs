@@ -6,11 +6,11 @@ hideFooterPagination: true
 
 ## Introduction
 
-`Sources` represent where Arklow acquires outstanding work from. Whether that be `PubSub`, `SQS`, `S3`, or something else.
+`Sources` represent where Arklow acquires outstanding work from. Whether that be `PubSub`, `SQS`, or straight `HTTP`.
 
 When implementing Arklow, the first step is to get your `Sources` setup.
 
-## Supported Sources
+## Reference
 
 <Columns cols={2}>
   <Card
@@ -18,19 +18,26 @@ When implementing Arklow, the first step is to get your `Sources` setup.
     icon="google"
     href="/resources/sources/gcp/index"
   >
-
+    Pub/Sub subscriptions.
   </Card>
   <Card
     title="AWS"
     icon="aws"
     href="/resources/sources/aws/index"
   >
-
+    SQS queues.
   </Card>  
   <Card
     title="HTTP Sources"
     icon="a"
     href="/resources/sources/arklow/index"
+  >
+    Send work directly to Arklow.
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/sources/list-sources"
   >
   </Card>
 </Columns>

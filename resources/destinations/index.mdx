@@ -6,31 +6,44 @@ hideFooterPagination: true
 
 ## Introduction
 
-`Destinations` represent _where_ Arklow, once it's satisifed the action has capacity, will release work to.
+`Destinations` represent _where_ Arklow, once it's satisfied the action has capacity, will release work to.
 
 The final step of an inital implementation of Arklow is to add at least one `Destination` to an `Action`.
 
-## Supported Destinations
+## Reference
 
 <Columns cols={2}>
+  <Card
+    title="HTTP"
+    icon="server"
+    href="/resources/destinations/http/index"
+  >
+    Deliver to any HTTP endpoint you run.
+  </Card>
   <Card
     title="Google Cloud"
     icon="google"
     href="/resources/destinations/gcp/index"
   >
-
+    Publish to a Pub/Sub topic.
   </Card>
   <Card
     title="AWS"
     icon="aws"
     href="/resources/destinations/aws/index"
   >
-
+    Deliver to an SQS queue.
   </Card>  
   <Card
     title="Arklow SDK Listener"
     icon="code"
     href="/resources/destinations/sdk/index"
+  >
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/destinations/list-destinations"
   >
   </Card>
 </Columns>

@@ -1,0 +1,128 @@
+---
+title: "Webhook"
+description: ""
+hideFooterPagination: true
+---
+
+The webhook destination delivers work to an HTTP endpoint you run.
+
+## Credentials
+
+Optional. Uses an [HTTP Auth Headers credential](/resources/credentials/http/auth-headers) to attach headers to every delivery.
+
+<Info>
+  N.B: Credential headers overwrite destination headers of the same name.
+</Info>
+
+## Request
+
+Arklow makes the following request to your endpoint:
+
+* **Method**: `POST`
+* **URL**: the URL configured on the destination.
+* **Headers**:
+  * All headers configured on the destination, plus the credential's headers.
+  * `Content-Type`: `application/json`
+  * `x-arklow-actionid`: the id of the action being delivered.
+  * `x-arklow-attempt`: the attempt number, starting at `0`.
+* **Body**: the action's payload, as JSON.
+
+## Response
+
+A delivery settles by ack or nack. Your response can carry it in two ways:
+
+<Tabs>
+  <Tab title="Headers">
+    ```http
+    HTTP/1.1 200 OK
+    x-arklow-signaling: nack
+    x-arklow-signaling-val: 30
+    ```
+
+    `x-arklow-signaling` takes `ack`, `nack`, or `mod_ack`. `x-arklow-signaling-val` carries the value in seconds, where one applies.
+  </Tab>
+  <Tab title="Body">
+    ```json
+    {
+      "__arklow__": {
+        "signal": "nack",
+        "value": 30
+      }
+    }
+    ```
+
+    `signal` takes `ack`, `nack`, or `mod_ack`. `value` carries the value in seconds, where one applies.
+  </Tab>
+</Tabs>
+
+When both are present, the headers take precedence.
+
+### Signals
+
+| Signal | Effect |
+|---|---|
+| `ack` | The action succeeds. |
+| `nack` | The attempt fails and is redelivered. A value in seconds schedules the redelivery. |
+| `mod_ack` | Holds the action in `ack_wait` for the value in seconds, or 60 without one. |
+
+### Unsignaled responses
+
+A `2xx` response with no signal follows the destination's signaling config:
+
+* With `{"enabled": true, "default": "ack"}`, the action succeeds immediately.
+* Otherwise, the action waits in `ack_wait` for 60 seconds. An attempt that passes its deadline unsettled is redelivered under the next attempt number.
+
+Delivery is at-least-once: the same unit of work can arrive more than once.
+
+## Settling later
+
+A delivery can settle after the response, through the ingress endpoints `/v1/ack`, `/v1/nack`, and `/v1/modack`. Use the `x-arklow-actionid` and `x-arklow-attempt` from the delivery.
+
+* A settle applies only to the attempt it names.
+* Within nack `terms`: `retry_at` takes unix seconds and schedules the retry. `retry: false` makes the failure permanent. With neither set, Arklow schedules the retry itself.
+* `mod_ack` extends the settlement deadline by the given seconds.
+
+## Failures
+
+Any other response classifies as follows:
+
+| Your response | What Arklow does |
+|---|---|
+| `429` | Rate limited. `retry-after` is honored. |
+| `500` `502` `503` `504` | Unavailable. Retried, and Arklow backs off. |
+| `408` `409` `425` | Retried. |
+| other `4xx` | Rejected. Retried after `retry-after`, or 60 seconds without one. |
+
+Retries carry the next attempt number and continue until the action times out.
+
+## Add a webhook to Arklow
+
+<Steps>
+  <Step title="Open the destinations page">
+    Go to [**Destinations**](https://app.arklow.io/dashboard/destinations) and click **Create destination**.
+  </Step>
+  <Step title="Pick the type">
+    Set **Destination Type** to **Webhook**.
+  </Step>
+  <Step title="Configure the endpoint">
+    Enter the **URL**. Add headers if your endpoint expects them.
+  </Step>
+  <Step title="Save">
+    Click **Create destination**.
+  </Step>
+</Steps>
+
+## Special Notes
+
+Arklow domains are not accepted as webhook targets.
+
+## Reference
+
+<Columns cols={2}>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/ingress/post-v1ack"
+  >
+  </Card>
+</Columns>

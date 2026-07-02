@@ -4,6 +4,14 @@ description: ""
 hideFooterPagination: true
 ---
 
+## Introduction
+
+One view the engine has of your systems comes from deliveries: how fast they complete, and what the destination says back. Metrics widen that view. By reading the telemetry you already collect, Arklow can see the effect of its own decisions inside your systems, and learn about capacity it can't observe from deliveries alone.
+
+A metric source is a connection to a provider you already run, Datadog or Prometheus today, authenticated with a [credential](/resources/credentials/index). Queries select the series that matter, and scoping them with the same tags you dispatch under lets Arklow attribute what it reads to the right [lane](/resources/lanes/index).
+
+## Reference
+
 <Columns cols={2}>
   <Card
     title="Datadog"
@@ -15,6 +23,12 @@ hideFooterPagination: true
     title="Prometheus"
     icon="chart-line"
     href="/resources/metrics/prometheus/index"
+  >
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/metrics/list-metric-sources"
   >
   </Card>
 </Columns>
