@@ -4,40 +4,39 @@ description: ""
 hideFooterPagination: true
 ---
 
-## Introduction
+A source is where outstanding work enters Arklow. Each accepted unit becomes an action under the definition you choose.
 
-`Sources` represent where Arklow acquires outstanding work from. Whether that be `PubSub`, `SQS`, or straight `HTTP`.
+Use direct HTTP ingress when your service already knows when work should begin. Connect a queue when work already collects in SQS or Pub/Sub and Arklow should acquire it from there.
 
-When implementing Arklow, the first step is to get your `Sources` setup.
-
-## Reference
+Queue redelivery resolves to the original action through the provider's source-message identity. Each accepted direct HTTP request creates a new action because HTTP ingress has no equivalent source identity.
 
 <Columns cols={2}>
   <Card
-    title="Google Cloud"
-    icon="google"
-    href="/resources/sources/gcp/index"
+    title="HTTP ingress"
+    icon="globe"
+    href="/resources/sources/arklow/ingress"
   >
-    Pub/Sub subscriptions.
+    Send work directly from your service.
   </Card>
   <Card
-    title="AWS"
+    title="Amazon SQS"
     icon="aws"
-    href="/resources/sources/aws/index"
+    href="/resources/sources/aws/sqs"
   >
-    SQS queues.
-  </Card>  
-  <Card
-    title="HTTP Sources"
-    icon="a"
-    href="/resources/sources/arklow/index"
-  >
-    Send work directly to Arklow.
+    Acquire messages from an SQS queue.
   </Card>
   <Card
-    title="API Reference"
+    title="Google Pub/Sub"
+    icon="google"
+    href="/resources/sources/gcp/pubsub"
+  >
+    Acquire messages from a Pub/Sub subscription.
+  </Card>
+  <Card
+    title="API reference"
     icon="code"
     href="/api-reference/sources/list-sources"
   >
+    Create and manage queue sources through the API.
   </Card>
 </Columns>

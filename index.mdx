@@ -3,69 +3,116 @@ title: "Arklow Documentation"
 description: ""
 ---
 
-## Introduction
+Work arrives from your services and queues. Arklow accepts it durably, routes it, and holds excess demand until the destination can absorb it. During a downstream slowdown, excess work remains in Arklow and is released as capacity recovers.
 
-Arklow helps your infrastructure learn its own capacity, protecting you from outages and overspend. This is called [Admission Control](https://en.wikipedia.org/wiki/Admission_control).
+Delivery outcomes give Arklow a useful view of capacity from the first action. Your existing metrics can widen that view. Scale targets add capacity when a protected backlog indicates sustained demand.
 
-You tell Arklow where outstanding work sits, and where it should land. Arklow watches how each destination handles its deliveries and releases work at the pace it can absorb. It slows down when a destination degrades and speeds back up as capacity returns.
+```mermaid actions={false}
+flowchart LR
+    S["Sources"] --> A["Durable actions"]
+    A --> R["Rules"]
+    R --> G["Admission"]
+    G --> D["Destinations"]
+    D --> O["Outcomes"]
+    O --> G
+```
 
-<Card
-  title="Quick Start"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Take a guided tour of Arklow's key components.
-</Card>
+<br />
 
-## Guides
-
-Here are some common guides that operators find useful.
+<Note>
+  Arklow can also track work that happens externally. Use the [SDK](/resources/destinations/sdk/index) when moving existing pipelines behind Arklow is impractical.
+</Note>
 
 <Columns cols={2}>
   <Card
-    title="How Arklow Works"
+    title="Quickstart"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Send an action through Arklow and settle its first delivery.
+  </Card>
+  <Card
+    title="How Arklow works"
     icon="puzzle-piece"
     href="/fundamentals/overview"
   >
-    The path workloads take from Source to Destination.
-  </Card>
-  <Card
-    title="Sources"
-    icon="truck-ramp-box"
-    href="/resources/sources/index"
-  >
-    Tell Arklow where your outstanding work sits.
-  </Card>
-  <Card
-    title="Deliver Work"
-    icon="truck-fast"
-    href="/resources/destinations/index"
-  >
-    Setup the SDK listener, or tell Arklow where to send work that's ready.
-  </Card>
-    <Card
-    title="Feeding Metrics"
-    icon="dolly"
-    href="/resources/metrics/index"
-  >
-    Arklow can read your existing metrics across multiple different providers to improve its understanding and decision making.
-  </Card>
-  <Card
-    title="Lanes & Rules"
-    icon="road"
-    href="/resources/lanes/index"
-  >
-    An introduction to Lanes and using our Rules Engine.
+    One action across lanes, admission, shared capacity, and settlement.
   </Card>
 </Columns>
 
-## OpenAPI
+## Core resources
+
+<Columns cols={2}>
+  <Card
+    title="Actions"
+    icon="bolt"
+    href="/resources/actions/index"
+  >
+    Define the work your platform performs.
+  </Card>
+  <Card
+    title="Sources"
+    icon="arrow-down-to-line"
+    href="/resources/sources/index"
+  >
+    Bring work in over HTTP or from a queue you already run.
+  </Card>
+  <Card
+    title="Destinations"
+    icon="arrow-up-from-line"
+    href="/resources/destinations/index"
+  >
+    Deliver work to webhooks, Pub/Sub, or SDK listeners.
+  </Card>
+  <Card
+    title="Rules"
+    icon="scale-balanced"
+    href="/resources/rules/index"
+  >
+    Route, tag, transform, skip, or terminate work before dispatch.
+  </Card>
+</Columns>
+
+## Capacity management
+
+<Columns cols={2}>
+  <Card
+    title="Admission control"
+    icon="gauge"
+    href="/fundamentals/admission-control"
+  >
+    Waiting, running and unsettled limits, pacing, and caps.
+  </Card>
+  <Card
+    title="Metrics"
+    icon="chart-line"
+    href="/resources/metrics/index"
+  >
+    Add the telemetry that already describes your systems.
+  </Card>
+  <Card
+    title="Capacity pools"
+    icon="boxes-stacked"
+    href="/resources/capacity-pools/index"
+  >
+    Protect destinations that draw from the same underlying resource.
+  </Card>
+  <Card
+    title="Scale targets"
+    icon="arrow-up-right-dots"
+    href="/resources/scale-targets/index"
+  >
+    Connect protected work to capacity Arklow can recommend or manage.
+  </Card>
+</Columns>
+
+## API reference
 
 <Card
   title="OpenAPI"
-  icon="stars"
+  icon="code"
   href="https://api.arklow.io/swagger/ui/json"
+  horizontal
 >
-  Get the full Raw OpenAPI JSON to feed to your Agent.
+  Browse the complete HTTP API.
 </Card>

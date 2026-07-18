@@ -3,16 +3,18 @@ title: "Quickstart"
 description: ""
 ---
 
-In this guide, we'll setup the minimum needed to get started with Arklow. You'll need an API key, found under [Settings](https://app.arklow.io/dashboard/settings).
+You'll need an API key from [**Settings**](https://app.arklow.io/dashboard/settings).
 
 ```mermaid
 flowchart LR
     Sources --> Arklow --> Destinations
 ```
 
+<br />
+
 <Steps>
   <Step title="Create an Action">
-    Actions define the work your platform does, bringing together everything. Create one on the [Create Actions](https://app.arklow.io/dashboard/actions/new) page. The variant is the name work arrives under, `orders.created` for example.
+    Actions define the work your platform performs. Create one on the [**New Action**](https://app.arklow.io/dashboard/actions/new) page. Its variant is the name work arrives under, such as `orders.created`.
   </Step>
   <Step title="Add a Destination">
     Create a [Webhook destination](/resources/destinations/http/webhook) pointed at an endpoint you run, and have that endpoint respond `200` with the header `x-arklow-signaling: ack`, which settles each delivery immediately. Other types of destinations we support are [here](/resources/destinations/index).
@@ -52,16 +54,16 @@ flowchart LR
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="How Arklow Works" icon="puzzle-piece" href="/fundamentals/overview">
+  <Card title="How Arklow works" icon="puzzle-piece" href="/fundamentals/overview">
     The path work takes from source to settlement.
   </Card>
-  <Card title="Settling work" icon="server" href="/resources/destinations/http/webhook">
-    The delivery contract, acks, nacks, and the settlement API.
+  <Card title="Delivery guarantees" icon="shield" href="/fundamentals/delivery-guarantees">
+    Attempts, acknowledgement, deadlines, and redelivery.
   </Card>
-  <Card title="Lanes" icon="road" href="/resources/lanes/index">
-    Tag work by tenant or region. Each tag combination learns its own limits.
+  <Card title="Admission control" icon="gauge" href="/fundamentals/admission-control">
+    Why work waits and how lanes isolate pressure.
   </Card>
-  <Card title="Rules" icon="scale-balanced" href="/resources/rules/index">
-    Route, tag, skip, or terminate work before it dispatches.
+  <Card title="Metrics and scaling" icon="chart-line" href="/resources/metrics/index">
+    Add telemetry, shared capacity, and scale targets.
   </Card>
 </CardGroup>

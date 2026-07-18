@@ -13,8 +13,8 @@ Uses an [AWS credential](/resources/credentials/aws/access-keys).
 ## Add SQS to Arklow
 
 <Steps>
-  <Step title="Open the sources page">
-    Go to [**Sources**](https://app.arklow.io/dashboard/sources) and click **Create source**.
+  <Step title="Open the action flow">
+    Open the action definition this queue should create, select **Flow**, and click **Add source**.
   </Step>
   <Step title="Pick the type">
     Set **Source Type** to **AWS SQS**.
@@ -22,8 +22,8 @@ Uses an [AWS credential](/resources/credentials/aws/access-keys).
   <Step title="Configure the queue">
     Enter the **Queue URL** and select a **Region**.
   </Step>
-  <Step title="Choose the action">
-    Point the source's ingest at the action definition it feeds. Every message ingests under that variant.
+  <Step title="Choose how attributes become tags">
+    Leave **Read platform attributes as tags** enabled when SQS message attributes should travel with the action as tags. Disable it when only the message body should shape the work.
   </Step>
   <Step title="Select the credential">
     Under **Authentication**, select the AWS credential.
@@ -33,6 +33,6 @@ Uses an [AWS credential](/resources/credentials/aws/access-keys).
   </Step>
 </Steps>
 
-## Special Notes
+## Deduplication
 
-Actions are keyed to the source message, so a message redelivered by SQS does not create a second action.
+Actions are keyed to the source message, so an SQS redelivery resolves to the original action.

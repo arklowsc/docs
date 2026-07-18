@@ -1,0 +1,61 @@
+---
+title: "Delivery guarantees"
+description: ""
+---
+
+When Arklow accepts an action, it creates one durable record, tracks its outcome, and keeps it within its configured lifetime. The caller can disconnect while the action waits for capacity, retries, or awaits settlement.
+
+## At-least-once delivery
+
+Arklow uses at-least-once delivery. The same action can reach a destination more than once when an acknowledgement is lost, a lease expires, or a retry is requested.
+
+Each delivery is an attempt. Attempts begin at `0` and increase when Arklow redelivers the action. The action ID remains the same across attempts.
+
+Build consumers to handle repeated delivery safely. Where the work has an external side effect, use the action ID or a stable business identifier as an idempotency key. The attempt number identifies only one delivery of that work; use action-level identity for idempotency.
+
+## Attempt-aware settlement
+
+An acknowledgement, rejection, or deadline extension names both the action and its attempt number. It applies only while that attempt is authoritative.
+
+This prevents a delayed acknowledgement from attempt `0` from completing an action that has already moved on to attempt `1`. Arklow refuses stale settlements, protecting the newer delivery.
+
+The destination can settle an attempt in three ways:
+
+| Signal | Result |
+|---|---|
+| Ack | The action succeeds |
+| Nack | The action is retried, or fails when the rejection is permanent |
+| Modack | The current attempt receives more time to settle |
+
+## Settlement by destination
+
+### Webhooks
+
+A webhook can acknowledge or reject work in its HTTP response. It can also accept the delivery first and settle it later through the settlement endpoints.
+
+If an attempt remains unsettled past its deadline, Arklow can deliver it again under a new attempt number. See [Webhook](/resources/destinations/http/webhook) for response signals, deadlines, and retry behavior.
+
+### Publishing destinations
+
+A publishing destination settles when Arklow successfully publishes the message. For example, a Pub/Sub destination succeeds when Pub/Sub accepts the publish.
+
+That settlement boundary ends at the handoff to the messaging service. End-consumer completion requires a destination with an explicit acknowledgement path.
+
+### SDK listeners
+
+An SDK listener asks for work and declares how many deliveries it can hold. Each delivery is claimed with a lease, then acknowledged, rejected, or extended by the listener.
+
+The lease keeps abandoned work from remaining open indefinitely. If a listener disappears before settlement and the attempt can no longer be completed, Arklow can make the action available for another attempt.
+
+## Source deduplication
+
+Queue sources identify work using the source and the provider's message ID. If SQS or Pub/Sub redelivers the same source message after acceptance, the redelivery resolves to the original action.
+
+[HTTP ingress](/resources/sources/arklow/ingress) has no equivalent idempotency key. Every accepted POST creates a new action, even when two requests carry identical payloads.
+
+Source deduplication and destination delivery answer different questions:
+
+- Source deduplication prevents one queue message from creating multiple actions.
+- At-least-once delivery allows one accepted action to have multiple delivery attempts.
+
+An action created once may still be delivered more than once. Consumers must therefore remain idempotent even when work arrived through a deduplicated source.

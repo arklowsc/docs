@@ -1,0 +1,55 @@
+---
+title: "HTTP autoscaler floor"
+description: ""
+hideFooterPagination: true
+---
+
+The **HTTP scale API (floor)** target updates the range available to your platform's autoscaler. Your autoscaler continues choosing the live replica count within that range.
+
+This mode uses the shared [status endpoint and authentication contract](/resources/scale-targets/http/index).
+
+## Write contract
+
+Arklow sends:
+
+```http
+PATCH {endpoint}/scale/autoscaling
+Content-Type: application/json
+```
+
+```json
+{
+  "min_replicas": 3,
+  "max_replicas": 8
+}
+```
+
+Both values come from the accepted scale setting and remain within the target's configured envelope.
+
+Return a `2xx` response after your platform accepts the new range. The status endpoint can return `settled: false` while the autoscaler or underlying capacity converges.
+
+## Add an HTTP floor target
+
+<Steps>
+  <Step title="Prepare the API">
+    Implement the shared status endpoint and the autoscaling write endpoint.
+  </Step>
+  <Step title="Open scale targets">
+    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **HTTP scale API (floor)**.
+  </Step>
+  <Step title="Enter the endpoint">
+    Provide the public HTTPS base URL of the scale API.
+  </Step>
+  <Step title="Select authentication">
+    Choose the HTTP Auth Headers credential containing the headers your API expects.
+  </Step>
+  <Step title="Select capacity">
+    Choose the destination or shared pool served by this platform.
+  </Step>
+  <Step title="Set the envelope">
+    Enter the minimum and maximum replicas available to your autoscaler.
+  </Step>
+  <Step title="Save">
+    Create the target and confirm that its first status observation matches your platform.
+  </Step>
+</Steps>

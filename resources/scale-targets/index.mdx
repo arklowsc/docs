@@ -1,0 +1,132 @@
+---
+title: "Scale targets"
+description: ""
+hideFooterPagination: true
+---
+
+A scale target connects a capacity pool to infrastructure that can change the supply behind its destinations.
+
+Each target identifies one scalable resource, the range Arklow may operate within, and the connection used to observe and change it.
+
+## Pool ownership
+
+Every scale target belongs to one capacity pool. The target should change capacity that serves the destinations in that pool.
+
+For example, a pool containing destinations backed by one model deployment can own the target for that deployment. Destinations backed by unrelated deployments belong in separate pools with separate targets.
+
+One pool can have several scale targets when separate components contribute capacity to the same work. A metric binding can identify the component represented by each target.
+
+## Scale targets and autoscaling
+
+Many platforms already include an autoscaler. Arklow can work with that controller or request a replica count directly, depending on the target type.
+
+| Mode | Arklow changes | Capacity controller |
+|---|---|---|
+| **Autoscaler floor** | The minimum and maximum replicas available to the provider autoscaler | The provider autoscaler chooses the live replica count within those bounds |
+| **Desired count** | A concrete replica count within the target's configured range | Arklow requests the live target size |
+
+Admission control remains active while new capacity provisions. Work can wait during that interval and resume as the destination becomes ready.
+
+## Target configuration
+
+| Dashboard area | Configuration |
+|---|---|
+| **Name** | A required, unique name. The name stays fixed after creation. |
+| **Provider** | The platform and scaling mode. The provider stays fixed after creation. |
+| **Authentication** | A credential compatible with the selected provider. |
+| **Capacity** | The destination or shared pool served by the scalable resource. |
+| **Metric Binding** | A metric source, query, and optional tag projection. |
+| **Scaling** | A minimum of `0` or more replicas and a maximum of at least `1`. The minimum must be at or below the maximum. |
+
+The minimum and maximum form the target's **scale envelope**. Recommendations, accepted proposals, and automatic changes remain within this range.
+
+## Metric binding
+
+A target can bind to a query from one of your [metric sources](/resources/metrics/index). The query identifies measurements that describe the scalable resource.
+
+If a query returns measurements for several resources, add a tag projection. The projection names the metric tag and value that select this target:
+
+```text
+query: company.perf.models
+tag projection: model_id=M1
+```
+
+This binding assigns measurements tagged `model_id=M1` to the target. It applies only to target selection; work tags and routing remain unchanged. The projection key and value must be set together.
+
+A binding is optional. Pool demand remains available without one; add a binding when a query covers several resources and this target needs one matching series.
+
+## Proposals and Casper
+
+With Casper disabled, scale changes appear under [**Proposals**](https://app.arklow.io/dashboard/proposals) for review. Accepting a proposal applies the change to the provider. Saving changes to a target may reconcile the provider with the target's current settings.
+
+Casper is the organization-wide setting that permits automatic scale changes. When it is enabled, Arklow can apply changes within each target's envelope without waiting for approval.
+
+A provider-side change may cause Arklow to reapply the accepted value. Deleting a target stops future writes. The provider retains its last setting.
+
+## Providers
+
+<Columns cols={2}>
+  <Card
+    title="Baseten"
+    icon="server"
+    href="/resources/scale-targets/baseten/index"
+  >
+    Adjust the autoscaling range for a model deployment.
+  </Card>
+  <Card
+    title="Together AI"
+    icon="microchip"
+    href="/resources/scale-targets/together/index"
+  >
+    Adjust the autoscaling range for a dedicated endpoint.
+  </Card>
+  <Card
+    title="Google Cloud"
+    icon="google"
+    href="/resources/scale-targets/gcp/index"
+  >
+    Control a managed instance group through its autoscaler or target size.
+  </Card>
+  <Card
+    title="HTTP scale API"
+    icon="globe"
+    href="/resources/scale-targets/http/index"
+  >
+    Connect another platform through a small HTTPS contract.
+  </Card>
+</Columns>
+
+## State and history
+
+The target page shows observed replicas, the last observation, current and requested scale values, the last write outcome, health conditions, and adjustment history. Together, these fields distinguish the requested setting from the capacity the provider currently reports.
+
+The pool page combines adjustments from every target attached to that pool. Dashboard notifications call out conditions that need attention, including a stopped endpoint or sustained pressure with no matching target.
+
+## Create a scale target
+
+<Steps>
+  <Step title="Prepare the pool">
+    Create the destinations the target will serve. Group them into a shared pool only when they use the same underlying capacity.
+  </Step>
+  <Step title="Open scale targets">
+    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets) and click **New scale target**.
+  </Step>
+  <Step title="Choose the provider">
+    Select the platform and scaling mode. Enter the fields that identify the resource.
+  </Step>
+  <Step title="Add authentication">
+    Select a compatible credential for provider observations and changes.
+  </Step>
+  <Step title="Select capacity">
+    Choose the destination or shared pool served by the target.
+  </Step>
+  <Step title="Set the envelope">
+    Enter the minimum and maximum replica counts.
+  </Step>
+  <Step title="Bind a metric if needed">
+    Select a metric query. Add a tag projection when the query covers several scalable resources.
+  </Step>
+  <Step title="Save and observe">
+    Create the target, then review its observations and adjustment history.
+  </Step>
+</Steps>

@@ -1,0 +1,114 @@
+---
+title: "Actions"
+description: ""
+hideFooterPagination: true
+---
+
+An action definition describes a kind of work your platform performs. An action record is one accepted unit of that work.
+
+For example, `orders.created` can be a definition. The order placed by one customer is a record under that definition. The definition supplies the contract and flow; the record carries the payload, tags, current state, and delivery history.
+
+## Action definitions
+
+A definition brings together the parts of Arklow that apply to one kind of work:
+
+- The name work arrives under.
+- The schema used to validate its payload.
+- The sources that create records for it.
+- The rules that tag, transform, route, skip, or terminate its records.
+- The destinations where admitted work can be delivered.
+- The metric policies associated with the work.
+
+Definitions are reusable. You configure the flow once, then each accepted record enters under that definition's current contract.
+
+### Variant
+
+The variant is the definition's canonical name. Use dot notation to describe the domain and event or operation:
+
+```text
+orders.created
+inference.requested
+calls.process
+```
+
+The variant is used by [HTTP ingress](/resources/sources/arklow/ingress), queue sources, rules, and SDK listeners. Treat it as a stable contract with callers.
+
+### Schema
+
+A definition can carry a JSON Schema for its payload. Arklow validates incoming payloads before accepting the work. An empty schema accepts any JSON payload.
+
+Schema validation belongs at the boundary: invalid work is rejected before it enters the action lifecycle or reaches a destination.
+
+### Aliases
+
+Aliases record other names associated with a definition. They help keep related identifiers visible during maintenance or a naming migration.
+
+The variant remains canonical. Callers should continue to ingest work under the variant unless their integration is deliberately moved to another definition.
+
+### Version
+
+Definitions begin at version `1`, and an update advances the version by one. When ingress omits the version, Arklow uses the current version for that variant. A caller can include the version to assert which current contract it expects.
+
+Advance the version when the definition's contract changes. Keep the variant stable while the work still means the same thing.
+
+## Flow configuration
+
+The definition's **Flow** links its destinations and [rules](/resources/rules/index). Rules can add tags, change the payload, select a destination, skip the current dispatch, or terminate the action. Arklow uses the definition's default destination when no rule selects one.
+
+The selected destination resolves the action's [lane](/resources/lanes/index) from the final tags using its complete-tag or partition-tag identity mode.
+
+## Action records and runs
+
+Each accepted unit of work receives its own action ID. In the dashboard, these records appear as runs under the definition.
+
+The record keeps the payload and tags supplied at ingress, plus the destination and attempt history that develop as it moves through the flow. The definition remains the reusable contract; the run shows the state of one accepted unit.
+
+## Lifecycle
+
+An action moves through a small set of public states.
+
+| State | Meaning |
+|---|---|
+| `queued` | Arklow accepted the work and it is ready to be evaluated |
+| `dispatch_wait` | The selected lane cannot admit the work yet |
+| `scheduled` | The action is waiting until a requested time |
+| `retrying` | A prior attempt ended and the next attempt is waiting to begin |
+| `running` | Arklow admitted the action and is delivering it |
+| `ack_wait` | The destination has the work and final settlement is outstanding |
+| `succeeded` | The action settled successfully |
+| `failed` | The action reached a permanent failure or exhausted its lifetime |
+| `canceled` | The action was canceled before successful completion |
+
+[Delivery guarantees](/fundamentals/delivery-guarantees) defines attempts, settlement, and redelivery for these states.
+
+## Create a definition
+
+<Steps>
+  <Step title="Name the work">
+    Create an action in the dashboard and enter a stable variant such as `orders.created`.
+  </Step>
+  <Step title="Set the payload contract">
+    Add a JSON Schema, or leave the schema empty when any JSON payload is valid.
+  </Step>
+  <Step title="Link a destination">
+    Open the action's **Flow** and link the destination that should receive the work. Set the fallback destination as default when the flow has more than one.
+  </Step>
+  <Step title="Add routing where needed">
+    Add rules when payloads or tags should choose a different destination or control lane.
+  </Step>
+</Steps>
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Create an action and deliver its first record.
+  </Card>
+  <Card title="Admission control" icon="road-barrier" href="/fundamentals/admission-control">
+    See why an action waits before delivery.
+  </Card>
+  <Card title="Sources" icon="arrow-down-to-line" href="/resources/sources/index">
+    Choose where action records enter Arklow.
+  </Card>
+  <Card title="Destinations" icon="arrow-up-from-line" href="/resources/destinations/index">
+    Choose where admitted work is delivered.
+  </Card>
+</CardGroup>

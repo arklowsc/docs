@@ -1,0 +1,64 @@
+---
+title: "HTTP scale API"
+description: ""
+hideFooterPagination: true
+---
+
+An HTTP scale target lets Arklow observe and change a platform through an API you expose. The same status endpoint supports two write modes.
+
+<Columns cols={2}>
+  <Card
+    title="Autoscaler floor"
+    icon="arrows-up-down"
+    href="/resources/scale-targets/http/floor"
+  >
+    Update the range used by your platform's autoscaler.
+  </Card>
+  <Card
+    title="Desired count"
+    icon="hashtag"
+    href="/resources/scale-targets/http/desired"
+  >
+    Request a concrete replica count from your platform.
+  </Card>
+</Columns>
+
+## Endpoint and authentication
+
+Set **Endpoint** to the HTTPS base URL of your scale API, such as `https://scale.example.com`. Arklow appends the status path and the selected write path to this URL.
+
+The endpoint must resolve to a publicly reachable address. Local and private-network addresses are rejected.
+
+Use an [HTTP Auth Headers credential](/resources/credentials/http/auth-headers) for bearer tokens, API keys, or other headers your API expects. The same headers accompany observations and writes.
+
+## Status endpoint
+
+Arklow observes both modes with:
+
+```http
+GET {endpoint}/scale/status
+```
+
+Return `200` with a JSON object:
+
+```json
+{
+  "current_replicas": 3,
+  "settled": true
+}
+```
+
+| Field | Type | Meaning |
+|---|---|---|
+| `current_replicas` | integer | The live replica count currently reported by the platform. |
+| `settled` | boolean | Whether the previous change has finished converging. Defaults to `true` when omitted. |
+
+Both fields are optional. Return the values your platform can observe consistently. `settled: false` defers another write while the previous change converges.
+
+## Write responses
+
+A `2xx` response accepts a write. If the response includes a string `state`, Arklow records it as the write outcome.
+
+A `4xx` response records a refusal. You can include an `error` string in the JSON body to describe the reason. Server errors and network failures appear as target errors.
+
+Your endpoints should handle repeated writes of the same value safely. Retries and provider-side drift can cause Arklow to apply an accepted setting again.

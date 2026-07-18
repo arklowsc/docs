@@ -13,8 +13,8 @@ Uses a [GCP Service Account credential](/resources/credentials/gcp/service-accou
 ## Add Pub/Sub to Arklow
 
 <Steps>
-  <Step title="Open the sources page">
-    Go to [**Sources**](https://app.arklow.io/dashboard/sources) and click **Create source**.
+  <Step title="Open the action flow">
+    Open the action definition this subscription should create, select **Flow**, and click **Add source**.
   </Step>
   <Step title="Pick the type">
     Set **Source Type** to **Google Pub/Sub**.
@@ -22,8 +22,8 @@ Uses a [GCP Service Account credential](/resources/credentials/gcp/service-accou
   <Step title="Configure the subscription">
     Enter the **Project ID** and **Subscription ID**.
   </Step>
-  <Step title="Choose the action">
-    Point the source's ingest at the action definition it feeds. Every message ingests under that variant.
+  <Step title="Choose how attributes become tags">
+    Leave **Read platform attributes as tags** enabled when Pub/Sub message attributes should travel with the action as tags. Disable it when only the message data should shape the work.
   </Step>
   <Step title="Select the credential">
     Under **Authentication**, select the GCP Service Account credential.
@@ -33,6 +33,6 @@ Uses a [GCP Service Account credential](/resources/credentials/gcp/service-accou
   </Step>
 </Steps>
 
-## Special Notes
+## Deduplication
 
-Actions are keyed to the source message, so a message redelivered by Pub/Sub does not create a second action.
+Actions are keyed to the source message, so a Pub/Sub redelivery resolves to the original action.

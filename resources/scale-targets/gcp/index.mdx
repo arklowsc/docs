@@ -1,0 +1,42 @@
+---
+title: "Google Cloud managed instance groups"
+description: ""
+hideFooterPagination: true
+---
+
+Arklow can change a Google Cloud managed instance group through its autoscaler or through the group's target size. Choose the mode that matches the controller already responsible for the group.
+
+<Columns cols={2}>
+  <Card
+    title="Autoscaler floor"
+    icon="arrows-up-down"
+    href="/resources/scale-targets/gcp/autoscaler"
+  >
+    Adjust the range available to an existing GCP autoscaler.
+  </Card>
+  <Card
+    title="Desired count"
+    icon="hashtag"
+    href="/resources/scale-targets/gcp/desired"
+  >
+    Resize a managed instance group to a concrete target size.
+  </Card>
+</Columns>
+
+## Shared configuration
+
+| Field | Value |
+|---|---|
+| **Project** | The Google Cloud project that owns the group. |
+| **Location type** | **Zone** for a zonal group or **Region** for a regional group. |
+| **Location** | A zone such as `us-central1-a` or a region such as `us-central1`. |
+| **Instance group manager** | The managed instance group name. |
+| **Credential** | A [GCP Service Account credential](/resources/credentials/gcp/service-account). |
+
+Arklow reads the group's target size, status, and current instance actions. Pending actions keep the target in a converging state until Google Cloud finishes the change.
+
+## Mode selection
+
+Use **GCP managed instance group** when the group has a Google Cloud autoscaler. Arklow changes the autoscaler's minimum and maximum, and the autoscaler remains responsible for the live count.
+
+Use **GCP managed instance group (manual)** when the group is resized directly. Arklow requests a concrete target size within the target's envelope.

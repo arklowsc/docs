@@ -6,45 +6,66 @@ hideFooterPagination: true
 
 <Columns cols={2}>
   <Card
+    title="Actions"
+    icon="bolt"
+    href="/resources/actions/index"
+  >
+    Define each kind of work and follow its runs.
+  </Card>
+  <Card
     title="Sources"
     icon="arrow-down-to-line"
     href="/resources/sources/index"
   >
-    Where Arklow acquires outstanding work.
+    Bring outstanding work into Arklow.
   </Card>
   <Card
     title="Destinations"
     icon="arrow-up-from-line"
     href="/resources/destinations/index"
   >
-    Where work is released once there's capacity.
-  </Card>
-  <Card
-    title="Credentials"
-    icon="key"
-    href="/resources/credentials/index"
-  >
-    How Arklow authenticates against your systems.
-  </Card>
-  <Card
-    title="Lanes"
-    icon="road"
-    href="/resources/lanes/index"
-  >
-    The unit of dispatch control.
+    Release work where it will be processed.
   </Card>
   <Card
     title="Rules"
     icon="scale-balanced"
     href="/resources/rules/index"
   >
-    Route, tag, and filter work before dispatch.
+    Route, tag, and transform work before dispatch.
+  </Card>
+  <Card
+    title="Lanes"
+    icon="road"
+    href="/resources/lanes/index"
+  >
+    Isolate dispatch control by customer or another work dimension.
   </Card>
   <Card
     title="Metrics"
     icon="chart-line"
     href="/resources/metrics/index"
   >
-    Feed your existing metrics into the engine.
+    Connect the telemetry that describes your systems.
+  </Card>
+  <Card
+    title="Capacity pools"
+    icon="boxes-stacked"
+    href="/resources/capacity-pools/index"
+  >
+    Group destinations that share one underlying supply.
+  </Card>
+  <Card
+    title="Scale targets"
+    icon="arrow-up-right-dots"
+    href="/resources/scale-targets/index"
+  >
+    Connect a pool to capacity that can change.
+  </Card>
+  <Card
+    title="Credentials"
+    icon="key"
+    href="/resources/credentials/index"
+  >
+    Authenticate Arklow to the systems it connects to.
   </Card>
 </Columns>
