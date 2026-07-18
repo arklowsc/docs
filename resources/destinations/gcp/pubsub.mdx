@@ -1,9 +1,12 @@
 ---
 title: "Pub/Sub"
+description: ""
 hideFooterPagination: true
 ---
 
 The Pub/Sub destination delivers work to a Google Cloud Pub/Sub topic.
+
+Arklow publishes the action payload as the message data. The action succeeds when Google Cloud accepts the publication. That settlement boundary ends at the handoff to Pub/Sub, before a separate subscriber processes the message.
 
 ## Credentials
 
@@ -28,7 +31,3 @@ Uses a [GCP Service Account credential](/resources/credentials/gcp/service-accou
     Click **Create destination**.
   </Step>
 </Steps>
-
-## Special Notes
-
-N/A

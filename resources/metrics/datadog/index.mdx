@@ -3,3 +3,81 @@ title: "Datadog"
 description: ""
 hideFooterPagination: true
 ---
+
+A Datadog metric source lets Arklow read the timeseries you already use to understand service health and capacity.
+
+## Credentials
+
+A [Datadog credential](/resources/credentials/datadog/index) is required. It contains an API key and an application key. The application key needs the `timeseries_query` scope.
+
+The source endpoint must match your Datadog site. US1 uses `https://api.datadoghq.com`; other sites use their own API domain.
+
+## Add Datadog to Arklow
+
+<Steps>
+  <Step title="Create the credential">
+    Add a Datadog credential with the API and application keys for the site you will query.
+  </Step>
+  <Step title="Open the metrics page">
+    Go to [**Metrics**](https://app.arklow.io/dashboard/metrics) and click **New metric source**.
+  </Step>
+  <Step title="Pick the type">
+    Set **Source Type** to **Datadog** and give the source a name.
+  </Step>
+  <Step title="Configure the site">
+    Enter the Datadog API endpoint and select the credential. The endpoint and keys must belong to the same Datadog site.
+  </Step>
+  <Step title="Keep queries self-contained">
+    Enter the complete metric name and scope in each query. You can leave **Default Scope** and **Metric Namespace** empty.
+  </Step>
+  <Step title="Save">
+    Click **Create metric source**.
+  </Step>
+</Steps>
+
+## Add queries
+
+Open the metric source's **Queries** tab and click **Add Query**. Enter a complete Datadog timeseries query, including its aggregator and scope:
+
+```text
+avg:system.cpu.user{env:production,service:api} by {customer_id}
+```
+
+The query can return several series. Tags such as `customer_id`, `service`, or `region` keep those series distinct and make them available for matching with action tags.
+
+### Identity tag exclusions
+
+Tags normally participate in series identity. Add volatile tags such as `pod_name` or `host` to **Identity Tag Excludes** when changing infrastructure should not create a new logical series for otherwise equivalent telemetry.
+
+Exclusions apply only to series identity; the Datadog query remains unchanged. Keep every tenant or partition tag needed to match action tags.
+
+## Link a query to an action
+
+A query begins informing an action after you attach it with a metric policy.
+
+<Steps>
+  <Step title="Open the action">
+    Open the action definition and select its **Metrics** tab.
+  </Step>
+  <Step title="Attach metrics">
+    Click **Attach Metrics**, or **Add Policy** when the action already has a policy. Select the Datadog source and query.
+  </Step>
+  <Step title="Choose a mode">
+    Use **Discover** to consider the query's returned series. Use **Manual** to limit consideration to series matching the selector you provide.
+  </Step>
+  <Step title="Align tag names">
+    In **Discover** mode, add **Tag Bindings** when an action tag and Datadog tag carry the same identity under different names, such as `customer` and `customer_id`. Manual policies use the metric-side selector instead.
+  </Step>
+  <Step title="Create the policy">
+    Set **Max Series** to a deliberate bound, then click **Create Policy**.
+  </Step>
+</Steps>
+
+Manual selectors map tag names to accepted values:
+
+```json
+{
+  "env": ["production"],
+  "service": ["api", "worker"]
+}
+```

@@ -4,46 +4,76 @@ description: ""
 hideFooterPagination: true
 ---
 
-A lane is the unit of dispatch control: one destination, one combination of tag values, within your org. Every lane holds its own limits.
+A lane is one admission scope at one destination. Actions in the same lane share occupancy, learned limits, pacing, delivery history, and temporary operator advice.
 
-## Tags
+Lane identity is resolved after rules select the destination and assign tags. Two action variants can share a lane when they reach the same destination with the same control tags. The same control tags at two destinations produce two lanes.
 
-Tags create lanes. For example, an action tagged `{"region": "eu"}` and an action tagged `{"region": "us"}` dispatch through different lanes of the same destination. An action with no tags dispatches through the destination's default lane.
+[How Arklow works](/fundamentals/overview#lanes-define-who-shares-admission-limits) follows an end-user lane through admission, shared capacity, and scaling.
 
-Tags come from:
+## Identity modes
 
-* The ingress body's `tags` field.
-* `tag.<key>` query parameters on ingress.
-* A [rule](/resources/rules/index) with the **Assign Tags** effect.
+| Mode | Lane identity | Use |
+|---|---|---|
+| **Complete tags** | The complete normalized tag map | The default when every tag combination should have independent control |
+| **Partition tag** | One configured tag name and value | Stable customer, tenant, account, region, or workload scopes |
 
-## Isolation
+Tag order has no effect on identity. An action with no tags uses the destination's untagged lane.
 
-Lanes adjust independently. A tenant overwhelming the `{"customer": "acme"}` lane has no effect on the limits of `{"customer": "initech"}`. Tag by dimensions that separate failure domains, such as tenant or region.
+## Partition behavior
 
-## Limits
+### Missing values
 
-Each lane carries two limits:
+Actions with a missing or empty partition value use the destination's shared untagged lane regardless of the other tags.
 
-* **Running limit**: the number of deliveries in flight.
-* **Unsettled limit**: the number of deliveries awaiting settlement.
+Choose a partition tag that is present on every action that requires isolation.
 
-The limits start conservative and follow the destination.
+### Other tags
 
-## Caps
+Tags outside the partition remain attached to the action and available to rules, metrics, and observability. The partition value alone determines the lane and its limits.
 
-A cap pins a lane below what it would otherwise run at. The lanes API accepts a running cap and an unsettled cap, and the engine treats each as a ceiling. A running cap of `0` pauses the lane.
+## Tag sources
+
+Tags can come from:
+
+- The `tags` field sent to [HTTP ingress](/resources/sources/arklow/ingress).
+- `tag.<key>` query parameters on HTTP ingress.
+- Source attributes configured to become tags.
+- An [Assign Tags rule](/resources/rules/index#assign-tags).
+
+## Limits and advice
+
+Each lane carries the running and unsettled occupancy described in [Admission control](/fundamentals/admission-control#running-and-unsettled-capacity). Admission applies the lane's current limits and any tighter quota from its [capacity pool](/resources/capacity-pools/index).
+
+Lane advice sets temporary running or unsettled caps. Advice can provide a lifetime in seconds or an explicit expiry; a lifetime defaults to 300 seconds. A running cap of `0` pauses admission until the advice expires or is deleted.
+
+Advice with the exact partition tag applies to one lane. Advice submitted without tags can apply across the destination's partitioned lanes.
 
 ## Cardinality
 
-Tags are for dimensions with a small set of values. An action definition can spread across a **maximum of 1000 lanes**. Ingress rejects work that would create more with `TAG_CARDINALITY_EXCEEDED`.
+A destination can hold at most **50,000 lane identities**. Ingress rejects a new identity beyond that limit with `TAG_CARDINALITY_EXCEEDED`; existing identities continue to accept work.
 
-## Reference
+Request identifiers, timestamps, and other unbounded values should stay outside lane identity. A partition tag can keep descriptive tags on the action while bounding lane identity to the selected values.
 
 <Columns cols={2}>
   <Card
-    title="API Reference"
+    title="Admission control"
+    icon="gauge"
+    href="/fundamentals/admission-control"
+  >
+    Waiting, running and unsettled limits, pacing, and caps.
+  </Card>
+  <Card
+    title="Capacity pools"
+    icon="boxes-stacked"
+    href="/resources/capacity-pools/index"
+  >
+    Shared supply, allocation, and budgets across lanes.
+  </Card>
+  <Card
+    title="API reference"
     icon="code"
     href="/api-reference/actions/set-action-definition-lane-advice"
   >
+    Set temporary running and unsettled advice.
   </Card>
 </Columns>

@@ -3,3 +3,92 @@ title: "Prometheus"
 description: ""
 hideFooterPagination: true
 ---
+
+A Prometheus metric source gives Arklow a view of the series you already collect. You can query a Prometheus-compatible HTTP API or scrape a text exposition endpoint directly.
+
+## Collection modes
+
+| Mode | Use it when | Endpoint behavior |
+|---|---|---|
+| **Query Range** | You run Prometheus or a compatible query service. | Arklow sends each PromQL expression to `/api/v1/query_range`. |
+| **Exposition Scrape** | A service exposes metrics directly. | Arklow reads Prometheus text format from the configured path, `/metrics` by default. |
+
+Query Range is the default. In Exposition Scrape mode, the endpoint supplies metric families directly and Arklow skips PromQL evaluation.
+
+## Credentials
+
+Credentials are optional. For an endpoint that expects authentication, create an [HTTP Auth Headers credential](/resources/credentials/http/auth-headers) containing the headers that must accompany each request, then select it on the metric source.
+
+## Add Prometheus to Arklow
+
+<Steps>
+  <Step title="Open the metrics page">
+    Go to [**Metrics**](https://app.arklow.io/dashboard/metrics) and click **New metric source**.
+  </Step>
+  <Step title="Pick the type">
+    Set **Source Type** to **Prometheus** and give the source a name.
+  </Step>
+  <Step title="Enter the endpoint">
+    Enter the base URL for Query Range, or the service URL for Exposition Scrape.
+  </Step>
+  <Step title="Choose the mode">
+    Select **Query Range** or **Exposition Scrape**. For a scrape, set **Metrics Path** if the endpoint does not use `/metrics`.
+  </Step>
+  <Step title="Select authentication">
+    Select an HTTP Auth Headers credential if the endpoint requires one. Leave authentication empty for an endpoint that accepts unauthenticated requests.
+  </Step>
+  <Step title="Save">
+    Click **Create metric source**.
+  </Step>
+</Steps>
+
+## Add queries
+
+Open the metric source's **Queries** tab and click **Add Query**.
+
+For Query Range, enter a PromQL expression that returns the series relevant to capacity or service health:
+
+```promql
+histogram_quantile(0.95, sum by (le, service) (rate(http_request_duration_seconds_bucket[5m])))
+```
+
+Keep the labels you will use to distinguish lanes, such as `customer_id`, `service`, or `region`. Arklow records each distinct label set as a metric series.
+
+For Exposition Scrape, enter a non-empty expression such as `scrape` to activate collection. Arklow treats the value as an activation field and reads all compatible metric families from the configured path. Filtering and aggregation belong at the exporter.
+
+### Identity tag exclusions
+
+Labels normally participate in series identity. Add volatile labels such as `pod` or `instance` to **Identity Tag Excludes** when a rollout should not create a new logical series for otherwise equivalent telemetry.
+
+Exclusions apply only to series identity; the provider request remains unchanged. Keep every tenant or partition label needed to match action tags.
+
+## Link a query to an action
+
+A query begins informing an action after you attach it with a metric policy.
+
+<Steps>
+  <Step title="Open the action">
+    Open the action definition and select its **Metrics** tab.
+  </Step>
+  <Step title="Attach metrics">
+    Click **Attach Metrics**, or **Add Policy** when the action already has a policy. Select the Prometheus source and query.
+  </Step>
+  <Step title="Choose a mode">
+    Use **Discover** to consider the query's returned series. Use **Manual** to limit consideration to series matching the selector you provide.
+  </Step>
+  <Step title="Align tag names">
+    In **Discover** mode, add **Tag Bindings** when an action tag and Prometheus label carry the same identity under different names, such as `customer` and `customer_id`. Manual policies use the metric-side selector instead.
+  </Step>
+  <Step title="Create the policy">
+    Set **Max Series** to a deliberate bound, then click **Create Policy**.
+  </Step>
+</Steps>
+
+Manual selectors map label names to accepted values:
+
+```json
+{
+  "env": ["production"],
+  "service": ["api", "worker"]
+}
+```

@@ -1,0 +1,53 @@
+---
+title: "GCP desired count"
+description: ""
+hideFooterPagination: true
+---
+
+The **GCP managed instance group (manual)** target controls a group's target size directly. Use it for a managed instance group whose size is owned through resize operations.
+
+Arklow clamps each requested size to the target's minimum and maximum before sending the resize operation. Google Cloud may take time to create or remove instances, and Arklow continues observing the group while it converges.
+
+<Warning>
+  A Google Cloud autoscaler can overwrite direct resize operations. Use the [autoscaler floor target](/resources/scale-targets/gcp/autoscaler) for a group managed by an autoscaler.
+</Warning>
+
+## Configuration
+
+This mode uses the [shared group fields](/resources/scale-targets/gcp/index#shared-configuration). It has no autoscaler field.
+
+The target's **Minimum replicas** and **Maximum replicas** bound every requested group size.
+
+## Required permissions
+
+The selected GCP Service Account credential needs:
+
+```text
+compute.instanceGroupManagers.get
+compute.instanceGroupManagers.update
+```
+
+You can place these permissions in a custom role scoped to the project containing the group.
+
+## Add a desired-count target
+
+<Steps>
+  <Step title="Open scale targets">
+    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **GCP managed instance group (manual)**.
+  </Step>
+  <Step title="Identify the group">
+    Enter its project, location type, location, and instance group manager.
+  </Step>
+  <Step title="Select authentication">
+    Choose the GCP Service Account credential with permission to read and resize the group.
+  </Step>
+  <Step title="Select capacity">
+    Choose the destination or shared pool served by the group.
+  </Step>
+  <Step title="Set the envelope">
+    Enter the minimum and maximum group sizes Arklow may request.
+  </Step>
+  <Step title="Save">
+    Create the target and confirm that the observed target size belongs to the expected group.
+  </Step>
+</Steps>

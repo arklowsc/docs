@@ -1,0 +1,55 @@
+---
+title: "Together AI"
+description: ""
+hideFooterPagination: true
+---
+
+The Together AI target adjusts the autoscaling range of one dedicated endpoint. Together AI continues choosing the live replica count within that range.
+
+## Configuration
+
+| Field | Value |
+|---|---|
+| **Endpoint ID** | The dedicated endpoint Arklow may observe and change. |
+| **Credential** | An [HTTP Auth Headers credential](/resources/credentials/http/auth-headers). |
+| **Minimum replicas** | The lowest autoscaling value Arklow may apply. |
+| **Maximum replicas** | The highest autoscaling value Arklow may apply. |
+
+Use the endpoint ID shown in Together AI, such as `endpoint-abcd1234`.
+
+## Authentication
+
+Create an HTTP Auth Headers credential with the bearer token used for the Together AI API:
+
+```text
+Authorization: Bearer <api-key>
+```
+
+## Observations and changes
+
+Arklow reads the endpoint state and its configured autoscaling range. Together AI does not expose a live replica count through this connection, so **Observed replicas** remains empty and the target reports reduced observability.
+
+Scale changes update the endpoint's minimum and maximum replicas together. Arklow pauses changes while the endpoint is `STOPPED`; start the endpoint in Together AI to resume scaling.
+
+## Add a Together AI target
+
+<Steps>
+  <Step title="Open scale targets">
+    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **Together AI**.
+  </Step>
+  <Step title="Identify the endpoint">
+    Enter the **Endpoint ID**.
+  </Step>
+  <Step title="Select authentication">
+    Choose the HTTP Auth Headers credential containing your Together AI bearer token.
+  </Step>
+  <Step title="Select capacity">
+    Choose the destination or shared pool served by this endpoint.
+  </Step>
+  <Step title="Set the envelope">
+    Enter the minimum and maximum replica counts available to the Together AI autoscaler.
+  </Step>
+  <Step title="Save">
+    Create the target and confirm that **Last observed** advances and **Health** shows no credential or endpoint error.
+  </Step>
+</Steps>

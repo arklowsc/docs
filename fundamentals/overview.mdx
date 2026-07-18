@@ -1,55 +1,153 @@
 ---
-title: "How Arklow Works"
+title: "How Arklow works"
 description: ""
 ---
 
+Arklow accepts work before it reaches the system that will perform it. Each accepted action has a durable record, so Arklow can route it, wait for capacity, deliver it, and account for its outcome after the caller disconnects.
+
+Consider an inference platform that serves two customers, Acme and Initech. Both send work to a worker fleet through an Arklow destination. Each request carries the customer it belongs to and the model it needs.
+
 ```mermaid actions={false}
 flowchart LR
-    Q[Your queues] --> S[Sources]
-    V[Your services] --> S
-    S --> A[Actions]
-    A --> R[Rules]
-    R --> L[Lanes]
-    L --> DST[Destinations]
+    S["HTTP or queue"] --> A["Durable action"]
+    A --> R["Rules"]
+    R --> L["Lane"]
+    L --> G["Admission"]
+    G -->|"Capacity available"| D["Destination"]
+    G -->|"Wait"| W["Durable backlog"]
+    W --> G
+    D --> O["Settlement"]
+    O --> G
 ```
 
-## Arrival
+<br />
 
-Somewhere in your infrastructure, work shows up. A customer places an order and a message lands on a queue. A [source](/resources/sources/index) is wherever that outstanding work sits. Today that includes SQS queues, Pub/Sub subscriptions, and [direct HTTP](/resources/sources/arklow/ingress) from your services.
+<Note>
+  When you send work through Arklow, it still runs on your own services and infrastructure. Arklow manages when work is released, how capacity is shared, and how scaling responds to demand.
+</Note>
 
-The message comes in and becomes an action under one of your definitions. The definition names the kind of work, `orders.created` in this example, and can carry a schema its payloads must satisfy. The order itself is the payload, and its tags carry facts about it, like the region it came from. Arklow takes durable custody from here.
+## Work enters Arklow
 
-## Routing
+### Acceptance
 
-Before the action moves, its definition's [rules](/resources/rules/index) run in priority order. These rules let you steer work by what it carries. Since our order came from the EU, a rule sends it to the destination serving that region. When no rule routes it, the action goes to the definition's default destination.
+The platform defines `inference.requested` as an [action](/resources/actions/index). The definition supplies the payload contract and flow used by every accepted request of that type.
 
-## Dispatch
+Work can arrive through [HTTP ingress](/resources/sources/arklow/ingress) or a connected [queue source](/resources/sources/index). Acceptance creates one action record containing the payload, tags, state, and history. Completion happens later, independently of the connection used to submit it.
 
-The chosen destination and the action's tag values identify a [lane](/resources/lanes/index): the action's place in line. Our order, tagged `{"region": "eu"}`, waits behind other `eu` work and has nothing to do with the `us` lane beside it.
+### Routing
 
-Each lane bounds how many deliveries are in flight, how much delivered work may sit unsettled, and how quickly new work goes out when the destination asks for pacing. The limits start conservative and adjust to what the destination shows it can handle. The `eu` lane has room, so the order dispatches and shows `running`. If it had to wait, it would hold here until capacity is expected to be available.
+[Rules](/resources/rules/index) inspect the action and select a [destination](/resources/destinations/index). They can also assign tags or change the outbound payload before delivery.
 
-## Delivery
+For this platform, the final tags include:
 
-An attempt is one delivery of the action's payload to the [destination](/resources/destinations/index): wherever the work should land. For our order, that's your fulfilment service.
+```text
+customer_id=acme
+model_id=translate-v2
+region=us
+```
 
-## Settlement
+The complete tag map remains attached to the action. Routing, metrics, and admission can use different parts of that context for different jobs.
 
-Delivered, the action waits in `ack_wait` while the destination works. Your fulfilment service processes the order and acks it, and the action ends in `succeeded`. A nack would send it back for another attempt, or end it in `failed` if permanent. A destination that needs more time can extend its deadline with a modack. A destination can settle immediately as part of taking the delivery, or later through the [settlement API](/resources/destinations/http/webhook).
+## Lanes define who shares admission limits
 
-An attempt left unsettled past its deadline is redelivered, so build your destination to expect the same unit of work more than once. An action that can't settle inside its timeout ends in `failed`.
+A [lane](/resources/lanes/index) is one admission scope at one destination. Actions resolved to the same lane share occupancy, limits, pacing, and delivery history.
 
-## Pace
+### Partition tags
 
-Throughout, the engine watches how each lane's deliveries go and keeps the lane's limits aligned with what the destination is handling. When a destination pushes back or slows down, Arklow eases off, and as capacity returns it speeds back up.
+The inference destination uses `customer_id` as its partition tag. All Acme actions sent to that destination share one lane, including actions with different models or regions. Initech actions use a separate lane.
 
-## Reference
+```text
+customer_id=acme, model_id=translate-v2  → Acme lane
+customer_id=acme, model_id=summarize-v1 → Acme lane
+customer_id=initech, model_id=translate-v2 → Initech lane
+```
+
+The partition tag carries your platform's existing customer, tenant, account, workspace, region, or workload identity into Arklow. Within that destination, the partition value determines which actions share a lane; the remaining tags stay available to rules and metrics.
+
+### Destination scope
+
+A lane belongs to one destination. Acme work routed to a second destination uses a second Acme lane. If both destinations consume the same worker fleet or provider quota, a capacity pool represents that shared supply.
+
+| Question | Configuration | Example |
+|---|---|---|
+| Whose work shares admission limits? | Destination partition tag | `customer_id=acme` |
+| Which destinations draw from the same supply? | Capacity pool membership | `inference-us` |
+| Which infrastructure changes size? | Scale target provider configuration | `translate-v2` deployment |
+| Which measurements describe it? | Scale target metric binding | `model_id=translate-v2` |
+
+## Admission
+
+Admission evaluates the selected lane and the destination's [capacity pool](/resources/capacity-pools/index). An action moves to delivery only when both boundaries have room.
+
+Within a lane, admission checks work currently being delivered and work still awaiting final settlement. [Admission control](/fundamentals/admission-control#running-and-unsettled-capacity) defines both limits.
+
+### Waiting
+
+When a boundary is full, the action enters `dispatch_wait` before any delivery attempt begins. The record remains durable and is reconsidered as capacity becomes available. A full Acme lane leaves Initech's lane allowance separate; their shared pool remains a second boundary.
+
+[Admission control](/fundamentals/admission-control) covers waiting, pacing, and operator caps in detail.
+
+## Delivery and feedback
+
+### Settlement
+
+The settlement boundary depends on the destination. A webhook settles from its response or a later acknowledgement. An SDK listener claims work and settles it after processing. A publishing destination settles when its provider accepts the message.
+
+Delivery is at least once. Destinations should use the action ID or a stable business identifier for idempotency. [Delivery guarantees](/fundamentals/delivery-guarantees) defines attempts, settlement, and redelivery.
+
+### Delivery feedback
+
+Arklow observes response time, refusals, failures, and the time work remains unsettled. Those outcomes change later admission decisions for the lane. A struggling destination receives less work; sustained healthy outcomes allow throughput to recover.
+
+This feedback is available from the first delivery.
+
+## Shared infrastructure
+
+### Infrastructure metrics
+
+[Metric sources](/resources/metrics/index) add measurements from inside the worker fleet, model deployment, or provider. They can reveal shared pressure before it appears as a delivery failure.
+
+Metric identity stays separate from lane identity. In this example, `customer_id=acme` selects the end-user lane while `model_id=translate-v2` identifies the deployment experiencing pressure.
+
+### Capacity pools
+
+The Acme and Initech lanes both draw from the `inference-us` pool. A local lane limit controls one customer's work at one destination. The pool controls the aggregate supply used by every member lane and destination.
+
+When that supply is constrained, admission can hold a busy contributor while preserving room for other active lanes. [Capacity pools](/resources/capacity-pools/index) define membership, allocation, and budgets.
+
+### Scale targets
+
+A [scale target](/resources/scale-targets/index) connects the pool to the `translate-v2` deployment. Sustained demand or matching infrastructure evidence can produce a bounded scale change for that resource.
+
+Admission continues holding excess work while capacity provisions. As the destination reports healthier outcomes, lane limits reopen and the durable backlog drains.
 
 <Columns cols={2}>
   <Card
-    title="Quickstart"
-    icon="rocket"
-    href="/quickstart"
+    title="Admission control"
+    icon="gauge"
+    href="/fundamentals/admission-control"
   >
+    Waiting, running and unsettled limits, pacing, and caps.
+  </Card>
+  <Card
+    title="Lanes"
+    icon="road"
+    href="/resources/lanes/index"
+  >
+    Identity modes, partition behavior, advice, and cardinality.
+  </Card>
+  <Card
+    title="Delivery guarantees"
+    icon="shield"
+    href="/fundamentals/delivery-guarantees"
+  >
+    Durable custody, attempts, settlement boundaries, and redelivery.
+  </Card>
+  <Card
+    title="Capacity pools"
+    icon="boxes-stacked"
+    href="/resources/capacity-pools/index"
+  >
+    Shared supply, allocation, budgets, and attached scale targets.
   </Card>
 </Columns>

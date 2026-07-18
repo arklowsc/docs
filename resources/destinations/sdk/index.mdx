@@ -1,4 +1,149 @@
 ---
 title: "SDK"
+description: ""
 hideFooterPagination: true
 ---
+
+## Integration paths
+
+| Path | Use it when | Arklow's role |
+|---|---|---|
+| **Listener delivery** | Work can enter Arklow before execution begins | Admits the action, makes it available to listeners, and records settlement |
+| **External work** | An existing pipeline starts and executes the work | Creates an action record and tracks it until completion or expiry |
+
+## Authentication
+
+Listener delivery and external registration authenticate with an Arklow organization API key. The SDK destination stores no credential.
+
+## Work delivered to a listener
+
+### Destination setup
+
+<Steps>
+  <Step title="Open the destinations page">
+    Go to [**Destinations**](https://app.arklow.io/dashboard/destinations) and click **Create destination**.
+  </Step>
+  <Step title="Pick the type">
+    Set **Destination Type** to **SDK**.
+  </Step>
+  <Step title="Choose a namespace">
+    Enter the namespace your listeners will use.
+  </Step>
+  <Step title="Link the destination">
+    Create the destination, then link it from the action's **Flow** tab.
+  </Step>
+</Steps>
+
+### Listener options
+
+| Option | Behavior |
+|---|---|
+| `namespace` | Claims work from every active SDK destination in the organization with the same namespace |
+| `maxOutstanding` | Sets the maximum number of unsettled deliveries this listener can hold |
+| `variants` | Limits claims to the named action variants; an omitted or empty list accepts every variant |
+| `transport` | Uses `grpc` by default; use `poll` to claim over HTTPS |
+
+`maxOutstanding` must be a positive integer, applies per listener session, and releases a slot when a delivery settles.
+
+### Start the listener
+
+Call `listen(options, handler)` on the listener client.
+
+```typescript
+const running = listener.listen(
+  {
+    namespace: "billing",
+    variants: ["invoice.process"],
+    maxOutstanding: 16,
+  },
+  async (delivery) => {
+    await processInvoice(delivery.payload);
+  },
+);
+```
+
+### Delivery fields
+
+| Field | Value |
+|---|---|
+| `actionRecordId` | Stable action identity across attempts |
+| `attempt` | Delivery attempt number |
+| `variant` | Action definition variant |
+| `payload` | Action payload |
+| `tags` | Tags attached to the action, when present |
+| `leaseDeadlineAt` | Current claim deadline |
+| `timeoutAt` | Action timeout, when one applies |
+
+## Settlement
+
+The handler result settles a delivery when the handler does not settle it explicitly.
+
+| Handler result | Settlement |
+|---|---|
+| Returns or resolves | Acknowledges the delivery |
+| Throws or rejects | Rejects the attempt for retry |
+
+| Method | Effect |
+|---|---|
+| `await delivery.ack()` | Marks the action as succeeded |
+| `await delivery.nack()` | Rejects the attempt and allows redelivery |
+| `await delivery.nack({ retryAt })` | Schedules the next attempt for the supplied `Date` |
+| `await delivery.nack({ retry: false })` | Marks the failure as permanent |
+| `await delivery.extend(ms)` | Extends the current lease within the action timeout |
+
+The first explicit acknowledgement or rejection takes precedence over the handler result.
+
+### Leases
+
+A claim begins with a 60-second lease, shortened when the action timeout is nearer. The client renews the lease while the handler remains open. An expired claim can be delivered again.
+
+Use `actionRecordId` as the idempotency key across attempts. [Delivery guarantees](/fundamentals/delivery-guarantees) defines the shared attempt and redelivery contract.
+
+### Shutdown
+
+Call `await running.stop()` during shutdown. The listener stops claiming work and waits for its current handlers and settlements to finish. A handler that never settles also prevents `stop()` from completing.
+
+## Work already running elsewhere
+
+External registration uses an action variant. SDK destination and listener namespace configuration apply only to listener delivery.
+
+Call `registerExternalWork` after an existing pipeline starts work that Arklow should track. Registration creates an action record and bypasses admission because execution has already begun. After rules select its destination and lane, the work contributes to that lane's external running count until completion or expiry.
+
+```typescript
+const work = listener.registerExternalWork("invoice.process", {
+  externalRef: invoiceJob.id,
+  tags: { customer_id: invoiceJob.customerId },
+  payload: invoiceJob.payload,
+  timeout: 900,
+});
+
+const actionRecordId = await work.recordId;
+```
+
+| Option | Behavior |
+|---|---|
+| `variant` | Selects the action definition for the record |
+| `externalRef` | Uses an existing job identifier as an idempotency key |
+| `tags` | Attaches work identity and routing context |
+| `destinationId` | Associates the record with a destination linked to the definition |
+| `payload` | Stores the action payload |
+| `timeout` | Sets the maximum lifetime in seconds; defaults to `3600` and accepts `1` through `86400` |
+
+When `destinationId` is omitted, the action's normal rule and default-destination selection apply. Reusing an `externalRef` returns the existing action record. Supply a stable reference when registration may be retried; otherwise the client generates one.
+
+### External work handle
+
+| Member | Behavior |
+|---|---|
+| `recordId` | Resolves to the Arklow action ID |
+| `update()` | Extends the activity lease while the external work remains active |
+| `complete()` | Marks the action as succeeded |
+| `toJSON()` | Serializes the identifiers needed to resume tracking in another process |
+
+Registration starts a 60-second activity lease. Call `update()` on a cadence shorter than 60 seconds while the work remains active. The client coalesces calls made before another extension is needed, and the lease cannot move beyond the action timeout.
+
+Await `recordId` before calling `toJSON()`. Restore the serialized handle after a process handoff or restart with `externalWorkHandle()`.
+
+<Warning>
+  Activity-lease expiry also closes the action as succeeded. External work has no rejection or retry settlement.
+</Warning>

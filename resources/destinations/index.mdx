@@ -4,46 +4,39 @@ description: ""
 hideFooterPagination: true
 ---
 
-## Introduction
+A destination is where an action is handed off for processing. Link at least one destination to an action definition, then use a default or [rules](/resources/rules/index) to choose between several.
 
-`Destinations` represent _where_ Arklow, once it's satisfied the action has capacity, will release work to.
+The settlement boundary depends on the destination. Webhooks and SDK listeners can acknowledge work after processing it. Pub/Sub settles when Google Cloud accepts the publication; a separate subscriber's completion is outside that handoff.
 
-The final step of an inital implementation of Arklow is to add at least one `Destination` to an `Action`.
-
-## Reference
+Every destination starts with its own [capacity pool](/resources/capacity-pools/index). Group destinations only when they draw from the same underlying worker fleet, deployment, quota, or other constrained resource.
 
 <Columns cols={2}>
   <Card
-    title="HTTP"
+    title="Webhook"
     icon="server"
-    href="/resources/destinations/http/index"
+    href="/resources/destinations/http/webhook"
   >
-    Deliver to any HTTP endpoint you run.
+    Deliver an HTTP request to an endpoint you run.
   </Card>
   <Card
-    title="Google Cloud"
+    title="Google Pub/Sub"
     icon="google"
-    href="/resources/destinations/gcp/index"
+    href="/resources/destinations/gcp/pubsub"
   >
-    Publish to a Pub/Sub topic.
+    Publish work to a Pub/Sub topic.
   </Card>
   <Card
-    title="AWS"
-    icon="aws"
-    href="/resources/destinations/aws/index"
-  >
-    Deliver to an SQS queue.
-  </Card>  
-  <Card
-    title="Arklow SDK Listener"
+    title="SDK listener"
     icon="code"
     href="/resources/destinations/sdk/index"
   >
+    Let connected workers claim work when they have room.
   </Card>
   <Card
-    title="API Reference"
+    title="API reference"
     icon="code"
     href="/api-reference/destinations/list-destinations"
   >
+    Create and manage destinations through the API.
   </Card>
 </Columns>

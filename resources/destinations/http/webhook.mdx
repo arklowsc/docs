@@ -11,12 +11,12 @@ The webhook destination delivers work to an HTTP endpoint you run.
 Optional. Uses an [HTTP Auth Headers credential](/resources/credentials/http/auth-headers) to attach headers to every delivery.
 
 <Info>
-  N.B: Credential headers overwrite destination headers of the same name.
+  Credential headers overwrite destination headers with the same exact name and casing.
 </Info>
 
 ## Request
 
-Arklow makes the following request to your endpoint:
+Arklow sends this request to your endpoint:
 
 * **Method**: `POST`
 * **URL**: the URL configured on the destination.
@@ -112,7 +112,7 @@ Retries carry the next attempt number and continue until the action times out.
   </Step>
 </Steps>
 
-## Special Notes
+## Network boundary
 
 Arklow domains are not accepted as webhook targets.
 

@@ -1,0 +1,58 @@
+---
+title: "Baseten"
+description: ""
+hideFooterPagination: true
+---
+
+The Baseten target adjusts the autoscaling range of one model deployment. Baseten continues choosing the live replica count within that range.
+
+## Configuration
+
+| Field | Value |
+|---|---|
+| **Model ID** | The Baseten model that owns the deployment. |
+| **Deployment ID** | The deployment whose autoscaling settings Arklow may change. |
+| **Credential** | An [HTTP Auth Headers credential](/resources/credentials/http/auth-headers). |
+| **Minimum replicas** | The lowest autoscaling value Arklow may apply. |
+| **Maximum replicas** | The highest autoscaling value Arklow may apply. |
+
+The model and deployment IDs are available in Baseten's deployment details and API URLs.
+
+## Authentication
+
+Create an HTTP Auth Headers credential with the header Baseten expects for its API key:
+
+```text
+Authorization: Api-Key <api-key>
+```
+
+Keep the key in the credential and select that credential when creating the target.
+
+## Observations and changes
+
+Arklow reads the deployment status and active replica count. A deployment in a transitional state, such as deploying or updating, is allowed to finish before another change is applied.
+
+Scale changes update Baseten's minimum and maximum replicas together. The observed active replica count may take time to respond while Baseten provisions or removes replicas.
+
+## Add a Baseten target
+
+<Steps>
+  <Step title="Open scale targets">
+    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **Baseten**.
+  </Step>
+  <Step title="Identify the deployment">
+    Enter the **Model ID** and **Deployment ID**.
+  </Step>
+  <Step title="Select authentication">
+    Choose the HTTP Auth Headers credential containing your Baseten API key.
+  </Step>
+  <Step title="Select capacity">
+    Choose the destination or shared pool served by this deployment.
+  </Step>
+  <Step title="Set the envelope">
+    Enter the minimum and maximum replica counts available to the Baseten autoscaler.
+  </Step>
+  <Step title="Save">
+    Create the target and confirm that **Last observed** advances without a credential or deployment error.
+  </Step>
+</Steps>

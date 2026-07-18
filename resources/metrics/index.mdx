@@ -4,31 +4,95 @@ description: ""
 hideFooterPagination: true
 ---
 
-## Introduction
+Arklow learns from delivery before you connect any metrics. It can see how long attempts remain running or unsettled, whether a destination accepts them, and when it begins to push back.
 
-One view the engine has of your systems comes from deliveries: how fast they complete, and what the destination says back. Metrics widen that view. By reading the telemetry you already collect, Arklow can see the effect of its own decisions inside your systems, and learn about capacity it can't observe from deliveries alone.
+Metrics add the view from inside your systems. They can show pressure in a worker fleet, model deployment, provider quota, or another resource before that pressure appears as an outright delivery failure.
 
-A metric source is a connection to a provider you already run, Datadog or Prometheus today, authenticated with a [credential](/resources/credentials/index). Queries select the series that matter, and scoping them with the same tags you dispatch under lets Arklow attribute what it reads to the right [lane](/resources/lanes/index).
+## Metric model
 
-## Reference
+Metrics connect to actions in four steps:
+
+1. A **metric source** connects Arklow to Prometheus or Datadog.
+2. A **query** selects a family of measurements from that source.
+3. An action **policy** says which series from the query may describe that action.
+4. Arklow evaluates each eligible **series** in the context of the work it may represent.
+
+One metric name can contain many series. For example, one query may return:
+
+```text
+request_latency{customer_id=C1, model_id=M1}
+request_latency{customer_id=C1, model_id=M2}
+request_latency{customer_id=C2, model_id=M1}
+```
+
+The tags distinguish the streams. Keep the dimensions that identify a customer, deployment, endpoint, or other useful slice; exclude tags that only create noise, such as process or scrape-instance identifiers.
+
+## Queries
+
+Create queries on the metric source's **Queries** tab. A query holds the provider expression, identity-tag exclusions, and an active or paused state.
+
+Identity-tag exclusions remove selected provider tags when Arklow identifies a series. Use them when an operational tag changes without changing what the measurement represents.
+
+## Action policies
+
+Open an action definition's **Metrics** tab and add a policy for a source query.
+
+<Tabs>
+  <Tab title="Discover">
+    Arklow considers the series returned by the query and looks for the ones that consistently describe the action's work.
+
+    Use tag bindings when the work and metric use different names for the same dimension. A binding from action tag `customer` to series tag `customer_id` lets their values be compared without renaming either system.
+  </Tab>
+  <Tab title="Manual">
+    You nominate eligible series with a selector. For example:
+
+    ```json
+    {
+      "env": ["production"],
+      "service": ["inference"]
+    }
+    ```
+
+    Manual selectors nominate eligible series; they grant no delivery authority on their own.
+  </Tab>
+</Tabs>
+
+The policy's maximum-series value bounds how many series Arklow tracks for that action and query.
+
+## Metric evidence
+
+Correlation nominates a relationship. Authority over delivery requires repeated agreement with the work and with the results of flow changes.
+
+Once a relationship is credible, a fresh metric verdict can add bounded evidence to admission or to a [capacity pool](/resources/capacity-pools/index). The delivery view remains active underneath it.
+
+If collection stops or a series becomes stale, its current verdict expires. A metrics outage removes that additional evidence while delivery continues using the remaining signals.
+
+## Scale target bindings
+
+A [scale target](/resources/scale-targets/index) can bind to one metric query and, when needed, one tag key and value that identify the resource it manages. This is separate from the tag that identifies whose work should be isolated.
+
+For example, `customer_id=C1` can identify the affected work while `model_id=M1` selects the deployment that can grow. Those dimensions answer different questions and should remain separate.
 
 <Columns cols={2}>
-  <Card
-    title="Datadog"
-    icon="chart-line"
-    href="/resources/metrics/datadog/index"
-  >
-  </Card>
   <Card
     title="Prometheus"
     icon="chart-line"
     href="/resources/metrics/prometheus/index"
   >
+    Query a Prometheus API or scrape an exposition endpoint.
   </Card>
   <Card
-    title="API Reference"
+    title="Datadog"
+    icon="chart-line"
+    href="/resources/metrics/datadog/index"
+  >
+    Collect tagged series from the Datadog metrics API.
+  </Card>
+  <Card
+    title="API reference"
     icon="code"
     href="/api-reference/metrics/list-metric-sources"
   >
+    Manage sources, queries, policies, and health through the API.
   </Card>
 </Columns>

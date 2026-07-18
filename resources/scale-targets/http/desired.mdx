@@ -1,0 +1,54 @@
+---
+title: "HTTP desired count"
+description: ""
+hideFooterPagination: true
+---
+
+The **HTTP scale API (desired)** target requests a concrete replica count from your platform. Arklow clamps the request to the target's minimum and maximum.
+
+This mode uses the shared [status endpoint and authentication contract](/resources/scale-targets/http/index).
+
+## Write contract
+
+Arklow sends:
+
+```http
+PUT {endpoint}/scale/desired
+Content-Type: application/json
+```
+
+```json
+{
+  "desired_replicas": 3
+}
+```
+
+Return a `2xx` response after your platform accepts the target size. Return `409` when a previous change is still converging; Arklow treats the write as unsettled and waits before trying another change.
+
+The status endpoint should report `current_replicas` when available and use `settled` to show whether the requested count has converged.
+
+## Add an HTTP desired-count target
+
+<Steps>
+  <Step title="Prepare the API">
+    Implement the shared status endpoint and the desired-count write endpoint.
+  </Step>
+  <Step title="Open scale targets">
+    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **HTTP scale API (desired)**.
+  </Step>
+  <Step title="Enter the endpoint">
+    Provide the public HTTPS base URL of the scale API.
+  </Step>
+  <Step title="Select authentication">
+    Choose the HTTP Auth Headers credential containing the headers your API expects.
+  </Step>
+  <Step title="Select capacity">
+    Choose the destination or shared pool served by this platform.
+  </Step>
+  <Step title="Set the envelope">
+    Enter the minimum and maximum replica counts Arklow may request.
+  </Step>
+  <Step title="Save">
+    Create the target and confirm that its first status observation matches your platform.
+  </Step>
+</Steps>

@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "Arklow",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#F87116",
+    "light": "#FB923C",
+    "dark": "#C2410C"
   },
   "favicon": "/favicon.svg",
   "styling": {
@@ -27,13 +27,15 @@
             "group": "Fundamentals",
             "pages": [
               "fundamentals/overview",
-              "fundamentals/FAQ"
+              "fundamentals/admission-control",
+              "fundamentals/delivery-guarantees"
             ]
           },
           {
             "group": "Resources",
             "root": "resources/index",
             "pages": [
+              "resources/actions/index",
               {
                 "group": "Sources",
                 "root": "resources/sources/index",
@@ -70,13 +72,6 @@
                     "root": "resources/destinations/http/index",
                     "pages": [
                       "resources/destinations/http/webhook"
-                    ]
-                  },
-                  {
-                    "group": "AWS",
-                    "root": "resources/destinations/aws/index",
-                    "pages": [
-                      "resources/destinations/aws/sqs"
                     ]
                   },
                   {
@@ -138,6 +133,31 @@
                   "resources/metrics/datadog/index",
                   "resources/metrics/prometheus/index"
                 ]
+              },
+              "resources/capacity-pools/index",
+              {
+                "group": "Scale targets",
+                "root": "resources/scale-targets/index",
+                "pages": [
+                  "resources/scale-targets/baseten/index",
+                  "resources/scale-targets/together/index",
+                  {
+                    "group": "GCP",
+                    "root": "resources/scale-targets/gcp/index",
+                    "pages": [
+                      "resources/scale-targets/gcp/autoscaler",
+                      "resources/scale-targets/gcp/desired"
+                    ]
+                  },
+                  {
+                    "group": "HTTP",
+                    "root": "resources/scale-targets/http/index",
+                    "pages": [
+                      "resources/scale-targets/http/floor",
+                      "resources/scale-targets/http/desired"
+                    ]
+                  }
+                ]
               }
             ]
           }
@@ -162,7 +182,7 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://api.arklow.io"
+      "href": "https://app.arklow.io"
     }
   },
   "contextual": {
