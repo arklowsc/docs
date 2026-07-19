@@ -24,14 +24,14 @@ flowchart LR
   When you send work through Arklow, it still runs on your own services and infrastructure.
 </Note>
 
-## What does Arklow help?
+## What does Arklow help with?
 
 Arklow helps manage two common infrastructure challenges:
 
-- Product instabiltiy caused by constantly changing customer usage habits.
+- Product instability caused by constantly changing customer usage habits.
 - Overprovisioning, or underprovisioning of infrastructure resources to meet these changing needs.
 
-Here's the scenario: We're a platfom that serves two customers, *Orange Labs* and *Kite AI*. As part of our product, we need to use and serve different types of Models, and different types of infrastructure components.
+Here's the scenario: We're a platform that serves two customers, *Orange Labs* and *Kite AI*. As part of our product, we need to use and serve different types of Models, and different types of infrastructure components.
 
 ## First Steps
 
@@ -59,7 +59,7 @@ Once decided, this unit of work becomes associated with an identity composed of 
 
 ## Lanes
 
-A [lane](/resources/lanes/index) is one entry point at one destination. Work resolved to the same lane share occupancy, limits, pacing, and delivery history.
+A [lane](/resources/lanes/index) is one entry point at one destination. Work resolved to the same lane shares occupancy, limits, pacing, and delivery history.
 
 A good mental model for lanes is to consider them as per-customer, or per-actor.
 
@@ -90,7 +90,7 @@ A lane belongs to one destination. Orange Labs work routed to a second destinati
 
 Admission evaluates the selected lane and the destination's [capacity pool](/resources/capacity-pools/index). An action moves to delivery only when both boundaries have room.
 
-The decision to release work, comprises of multiple different inputs. [**Admission control**](/fundamentals/admission-control) explains how these inputs affect release.
+The decision to release work comprises multiple different inputs. [**Admission control**](/fundamentals/admission-control) explains how these inputs affect release.
 
 ### Waiting
 
@@ -100,7 +100,7 @@ When a decision to wait has been made, the action enters `dispatch_wait` before 
 
 ### Settlement
 
-The settlement boundary depends on the destination. For example, A webhook settles from its response or a later acknowledgement. An SDK listener claims work and settles it after processing. A publishing destination settles when its provider accepts the message.
+The settlement boundary depends on the destination. For example, a webhook settles from its response or a later acknowledgement. An SDK listener claims work and settles it after processing. A publishing destination settles when its provider accepts the message.
 
 Delivery is at least once. Destinations should use the action ID or a stable business identifier for idempotency. [Delivery guarantees](/fundamentals/delivery-guarantees) defines attempts, settlement, and redelivery.
 
