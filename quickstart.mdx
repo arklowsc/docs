@@ -15,23 +15,51 @@ You'll need an API key from [**Settings**](https://app.arklow.io/dashboard/setti
     Open the action's **Flow** tab and use **Link destination** to attach yours.
   </Step>
   <Step title="Start a listener">
-    The listener ships in the TypeScript SDK, `@arklow/sdk-ts`. It claims deliveries for its namespace and hands each one to your handler.
+    The listener claims deliveries for its namespace and hands each one to your handler.
 
-    ```typescript
-    import Listener from "@arklow/sdk-ts/listener";
+    <Tabs>
+      <Tab title="TypeScript">
+        ```typescript
+        import Listener from "@arklow/sdk-ts/listener";
 
-    const listener = new Listener({ apiKey: process.env.ARKLOW_API_KEY! });
+        const listener = new Listener({ apiKey: process.env.ARKLOW_API_KEY! });
 
-    const running = listener.listen(
-      { namespace: "quickstart", maxOutstanding: 16 },
-      async (delivery) => {
-        console.log(delivery.variant, delivery.payload);
-        await delivery.ack();
-      },
-    );
-    ```
+        const running = listener.listen(
+          { namespace: "quickstart", maxOutstanding: 16 },
+          async (delivery) => {
+            console.log(delivery.variant, delivery.payload);
+            await delivery.ack();
+          },
+        );
+        ```
+      </Tab>
+      <Tab title="Python">
+        The package `arklow-sdk-py` imports as `arklow`.
 
-    `ack()` settles the action as succeeded. A handler that returns without settling acks; a thrown error nacks, and the attempt is redelivered.
+        ```python
+        import asyncio
+        import os
+
+        from arklow import Listener
+
+
+        async def main() -> None:
+            listener = Listener(api_key=os.environ["ARKLOW_API_KEY"])
+
+            async def handle(delivery) -> None:
+                print(delivery.variant, delivery.payload)
+                await delivery.ack()
+
+            listener.listen(handle, namespace="quickstart", max_outstanding=16)
+            await asyncio.Event().wait()
+
+
+        asyncio.run(main())
+        ```
+      </Tab>
+    </Tabs>
+
+    `ack()` settles the action as succeeded. A handler that returns without settling acks; an unhandled error nacks, and the attempt is redelivered.
   </Step>
   <Step title="Send work">
     One POST to [ingress](/resources/sources/arklow/ingress) creates the action.

@@ -6,11 +6,11 @@ hideFooterPagination: true
 
 A destination tells Arklow where work should go. A capacity pool tells Arklow what that destination depends on.
 
-Every destination belongs to a pool. A new destination begins in a standalone pool of its own. If several destinations draw from the same worker fleet, GPU cluster, model deployment, or provider quota, you can place them in one shared pool.
+Every destination belongs to a pool. A new destination begins in a standalone pool of its own. If several destinations draw from the same set of containers, GPU cluster, model deployment, or provider quota, you can place them in one shared pool.
 
 ## Standalone and shared pools
 
-A standalone pool keeps one destination's capacity separate from every other destination. This is the right default when a destination has its own scaling boundary or failure domain.
+A standalone pool keeps one destination's capacity separate from every other destination. This is the right default when a destination has its own scaling boundary.
 
 A shared pool represents one physical supply of capacity behind several destinations. When that supply is constrained, Arklow evaluates demand from every member against their shared capacity.
 
@@ -25,17 +25,6 @@ Only group destinations that compete for the same underlying resource. Similar w
 Arklow continues to control each lane locally. A shared pool adds a second boundary across the destinations and lanes drawing from the same capacity.
 
 When the pool is steady, active work can use capacity that other lanes do not need. When the pool is constrained, Arklow can hold excess work from a noisy contributor while preserving room for other active lanes. Admission follows the tighter of the lane's local limit and its current share of the pool.
-
-## Pool budgets
-
-A pool can have two views of its capacity:
-
-- **Declared budget**: the amount of concurrent work you believe the shared resource can safely support.
-- **Learned budget**: Arklow's temporary view of the capacity demonstrated while the pool was under load.
-
-A learned budget expires when its evidence is no longer current. You can use a declared budget when you already know the operating boundary, or allow Arklow to build a view from observed behavior.
-
-The pool page shows the current pressure state, declared and learned capacity, member destinations, active contributors, and attached scale targets.
 
 ## Create a shared pool
 
