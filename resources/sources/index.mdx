@@ -6,9 +6,7 @@ hideFooterPagination: true
 
 A source is where outstanding work enters Arklow. Each accepted unit becomes an action under the definition you choose.
 
-Use direct HTTP ingress when your service already knows when work should begin. Connect a queue when work already collects in SQS or Pub/Sub and Arklow should acquire it from there.
-
-Queue redelivery resolves to the original action through the provider's source-message identity. Each accepted direct HTTP request creates a new action because HTTP ingress has no equivalent source identity.
+Arklow can accept work from generally anywhere. The current sources we support are below. If you require new sources, please let us know.
 
 <Columns cols={2}>
   <Card

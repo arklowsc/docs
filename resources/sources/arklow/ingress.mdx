@@ -8,10 +8,10 @@ Ingress is the direct path into Arklow over HTTP.
 
 ```
 POST https://ingress.arklow.io/v1/ingress
-POST https://ingress.arklow.io/v1/ingress/{variant}
+POST https://ingress.arklow.io/v1/ingress/{action}
 ```
 
-The first form names the `variant` in the body. The second names it in the path and takes the envelope of `payload`, `metadata`, `tags`, and `version`, or the payload itself, raw: a body without a `payload` key is taken whole as the payload.
+When specifying the `action` in the URL - Arklow will consider the payload to be as-is. Any configuration properties should provided as a Query String. This is useful for platforms that won't allow you to configure the payload of a request.
 
 ```bash
 curl -X POST "https://ingress.arklow.io/v1/ingress/orders.created?tag.region=eu" \
@@ -20,7 +20,20 @@ curl -X POST "https://ingress.arklow.io/v1/ingress/orders.created?tag.region=eu"
   -d '{"order_id": "8471", "total": 129.50}'
 ```
 
-Any `tag.<key>=<value>` query parameter merges over the body's tags, and the tags select the [lane](/resources/lanes/index) the action dispatches through. The response carries the action's id as `a_id`, already queued. Every accepted POST creates a new action: queue sources deduplicate on the source message, and direct ingress has no equivalent.
+Any `tag.<key>=<value>` query parameter merges over the body's tags, and the tags select the [lane](/resources/lanes/index) the action dispatches through. The response carries the action's id as `a_id`, already queued. Every accepted POST creates a new action: 
+
+When omitting the `action` in the URL, Arklow will expect you to provide the necessary details about the Action, including
+
+```bash
+curl -X POST "https://ingress.arklow.io/v1/ingress/ \
+  -H "X-Arklow-Auth: $ARKLOW_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"variant": "orders.created", "tags":{"region": "eu"}, "payload":{"order_id": "8471", "total": 129.50}}'
+```
+
+<Note>
+The HTTP ingress has special concerns for duplicate actions that we receive. Please see [Source Deduplication](delivery-guarantees#source-deduplication) for more information.
+</Note>
 
 ## Reference
 

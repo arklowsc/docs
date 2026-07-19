@@ -11,6 +11,18 @@ hideFooterPagination: true
 | **[Listener Delivery](#listener-delivery)** | You want your code to receive work from Arklow directly.
 | **[External Work](#external-work)** | An existing pipeline starts and executes the work.
 
+## Performance
+
+The expected delivery latency from work entering Arklow to reaching your listener(s) is between `150-300ms`. 
+
+Each lane can drive approximately `24` messages per second, or `1440` messages per minute. To increase throughput, use more [lanes](/resources/lanes).
+
+There isn't a maximum per-second limit, or maximum number of lanes you can use.
+
+<Note>
+Lanes with zero outstanding work can up to 4 seconds to calibrate, and deliver work. Once calibrated, delivery latency has no added delay. Arklow does this to synchronize the Engine for the Lane. 
+</Note>
+
 ## Authentication
 
 Listener delivery and external registration authenticate with an Arklow organization API key.

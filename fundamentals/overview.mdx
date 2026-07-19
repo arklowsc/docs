@@ -26,10 +26,11 @@ flowchart LR
 
 ## What does Arklow help with?
 
-Arklow helps manage two common infrastructure challenges:
+Arklow helps manage these common infrastructure challenges:
 
 - Product instability caused by constantly changing customer usage habits.
 - Overprovisioning, or underprovisioning of infrastructure resources to meet these changing needs.
+- Maximizing the useful capacity of your product's resources.
 
 Here's the scenario: We're a platform that serves two customers, *Orange Labs* and *Kite AI*. As part of our product, we need to use and serve different types of Models, and different types of infrastructure components.
 
@@ -108,7 +109,7 @@ Delivery is at least once. Destinations should use the action ID or a stable bus
 
 ### Infrastructure metrics
 
-[Metric sources](/resources/metrics/index) add measurements from inside your infrastructure, model deployments, or provider(s). They can reveal shared pressure before it appears as a delivery failure.
+[Metric sources](/resources/metrics/index) add measurements from inside your infrastructure, model deployments, or provider(s). They can reveal shared pressure before things start to degrade and fail.
 
 Metric identity stays separate from lane identity. In this example, `customer_id=orange_labs` selects the end-user lane while `model_id=translate-v2` identifies the deployment experiencing pressure.
 

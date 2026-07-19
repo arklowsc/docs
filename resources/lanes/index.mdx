@@ -19,6 +19,11 @@ Lane identity is resolved after rules select the destination and assign tags. Tw
 
 Tag order has no effect on identity. An action with no tags uses the destination's untagged lane.
 
+
+## Performance
+
+Each lane can drive approximately `24` messages per second, or `1440` messages per minute. To increase throughput, use more lanes. The recommended pattern is to partition by Users/Customers/Teams, which ever your platform uses to represent distinctive entities.
+
 ## Partition behavior
 
 ### Missing values
@@ -44,7 +49,7 @@ Tags can come from:
 
 Each lane carries the running and unsettled occupancy described in [Admission control](/fundamentals/admission-control#running-and-unsettled-capacity). Admission applies the lane's current limits and any tighter quota from its [capacity pool](/resources/capacity-pools/index).
 
-Lane advice sets temporary running or unsettled caps. Advice can provide a lifetime in seconds or an explicit expiry; a lifetime defaults to 300 seconds. A running cap of `0` pauses admission until the advice expires or is deleted.
+Lane advice sets temporary running or unsettled caps. Advice can provide a lifetime in seconds or an explicit expiry; a lifetime defaults to 300 seconds. A cap holds for the shorter of its lifetime and five minutes from the write. A running cap of `0` pauses admission for the full lifetime, until the advice expires or is deleted.
 
 Advice with the exact partition tag applies to one lane. Advice submitted without tags can apply across the destination's partitioned lanes.
 

@@ -3,67 +3,60 @@ title: "Quickstart"
 description: ""
 ---
 
-You'll need an API key from [**Settings**](https://app.arklow.io/dashboard/settings).
-
-```mermaid
-flowchart LR
-    Sources --> Arklow --> Destinations
-```
-
-<br />
-
+You'll need an API key from [**Settings**](https://app.arklow.io/dashboard/settings?tab=keys).
 <Steps>
   <Step title="Create an Action">
-    Actions define the work your platform performs. Create one on the [**New Action**](https://app.arklow.io/dashboard/actions/new) page. Its variant is the name work arrives under, such as `orders.created`.
+    Actions define the work your platform performs. Create one on the [**New Action**](https://app.arklow.io/dashboard/actions/new) page with the variant `orders.created`.
   </Step>
-  <Step title="Add a Destination">
-    Create a [Webhook destination](/resources/destinations/http/webhook) pointed at an endpoint you run, and have that endpoint respond `200` with the header `x-arklow-signaling: ack`, which settles each delivery immediately. Other types of destinations we support are [here](/resources/destinations/index).
+  <Step title="Add an SDK destination">
+    Create an [SDK destination](/resources/destinations/sdk/index) on the [**Destinations**](https://app.arklow.io/dashboard/destinations) page: set **Destination Type** to **SDK** and enter the namespace `quickstart`. [Other destination types](/resources/destinations/index) deliver over HTTP or to Pub/Sub.
   </Step>
   <Step title="Link them">
     Open the action's **Flow** tab and use **Link destination** to attach yours.
   </Step>
+  <Step title="Start a listener">
+    The listener ships in the TypeScript SDK, `@arklow/sdk-ts`. It claims deliveries for its namespace and hands each one to your handler.
+
+    ```typescript
+    import Listener from "@arklow/sdk-ts/listener";
+
+    const listener = new Listener({ apiKey: process.env.ARKLOW_API_KEY! });
+
+    const running = listener.listen(
+      { namespace: "quickstart", maxOutstanding: 16 },
+      async (delivery) => {
+        console.log(delivery.variant, delivery.payload);
+        await delivery.ack();
+      },
+    );
+    ```
+
+    `ack()` settles the action as succeeded. A handler that returns without settling acks; a thrown error nacks, and the attempt is redelivered.
+  </Step>
   <Step title="Send work">
-    Give the action work, straight over HTTP or from a queue you already run.
+    One POST to [ingress](/resources/sources/arklow/ingress) creates the action.
 
-    <Tabs>
-      <Tab title="HTTP">
-        One POST to [ingress](/resources/sources/arklow/ingress) creates the action.
+    ```bash
+    curl -X POST https://ingress.arklow.io/v1/ingress/orders.created \
+      -H "X-Arklow-Auth: $ARKLOW_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"order_id": "8471", "total": 129.50}'
+    ```
 
-        ```bash
-        curl -X POST https://ingress.arklow.io/v1/ingress/orders.created \
-          -H "X-Arklow-Auth: $ARKLOW_API_KEY" \
-          -H "Content-Type: application/json" \
-          -d '{"order_id": "8471", "total": 129.50}'
-        ```
-
-        The response carries the action's id (`a_id`), already queued.
-      </Tab>
-      <Tab title="AWS SQS">
-        Create an [SQS source](/resources/sources/aws/sqs) pointed at your queue, with its ingest set to your action. You'll need an [AWS credential](/resources/credentials/aws/access-keys). Arklow pulls each message and ingests it as one action, with the message body as the payload. Send a message to the queue to see it flow.
-      </Tab>
-      <Tab title="Google Pub/Sub">
-        Create a [Pub/Sub source](/resources/sources/gcp/pubsub) pointed at your subscription, with its ingest set to your action. You'll need a [GCP Service Account credential](/resources/credentials/gcp/service-account). Arklow pulls each message and ingests it as one action, with the message data as the payload. Publish a message to see it flow.
-      </Tab>
-    </Tabs>
+    [SQS](/resources/sources/aws/sqs) and [Pub/Sub](/resources/sources/gcp/pubsub) sources ingest into the same action from queues you already run.
   </Step>
   <Step title="Watch it settle">
-    Your endpoint receives one POST carrying the payload, and the ack settles it. The action moves from `queued` through `running` to `succeeded` on its page in the dashboard.
+    The delivery reaches your handler and the ack settles the action. The action's **Runs** tab shows the record as succeeded.
   </Step>
 </Steps>
 
 ## Next steps
 
 <CardGroup cols={2}>
+  <Card title="SDK" icon="code" href="/resources/destinations/sdk/index">
+    Listener options, settlement, leases, and external work.
+  </Card>
   <Card title="How Arklow works" icon="puzzle-piece" href="/fundamentals/overview">
     The path work takes from source to settlement.
-  </Card>
-  <Card title="Delivery guarantees" icon="shield" href="/fundamentals/delivery-guarantees">
-    Attempts, acknowledgement, deadlines, and redelivery.
-  </Card>
-  <Card title="Admission control" icon="gauge" href="/fundamentals/admission-control">
-    Why work waits and how lanes isolate pressure.
-  </Card>
-  <Card title="Metrics and scaling" icon="chart-line" href="/resources/metrics/index">
-    Add telemetry, shared capacity, and scale targets.
   </Card>
 </CardGroup>
