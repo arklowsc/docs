@@ -3,13 +3,14 @@ title: "Arklow Documentation"
 description: ""
 ---
 
+Arklow's goal is to find your infrastructure's ideal supply and demand curve.
+
 Work arrives from your services and queues. Arklow accepts it durably, routes it, and holds excess demand until the destination can absorb it. During a downstream slowdown, excess work remains in Arklow and is released as capacity recovers.
 
-Delivery outcomes give Arklow a useful view of capacity from the first action. Your existing metrics can widen that view. Scale targets add capacity when a protected backlog indicates sustained demand.
 
 ```mermaid actions={false}
 flowchart LR
-    S["Sources"] --> A["Durable actions"]
+    S["Sources"] --> A["Actions"]
     A --> R["Rules"]
     R --> G["Admission"]
     G --> D["Destinations"]
@@ -20,7 +21,7 @@ flowchart LR
 <br />
 
 <Note>
-  Arklow can also track work that happens externally. Use the [SDK](/resources/destinations/sdk/index) when moving existing pipelines behind Arklow is impractical.
+  Arklow can also track work that happens externally. Use the [SDK](/resources/destinations/sdk/index) when attaching existing pipelines to Arklow is impractical.
 </Note>
 
 <Columns cols={2}>
