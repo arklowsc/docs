@@ -1,9 +1,9 @@
 ---
-title: "Admission control"
+title: "Admission"
 description: ""
 ---
 
-Admission control determines when an accepted action may leave Arklow. It evaluates the action's lane, the destination's recent behavior, and any shared capacity behind it. Until the current conditions permit release, the work remains durable and waits.
+Admission control determines when an accepted action may leave Arklow. It evaluates the action's lane, the destination's recent behavior, and any shared capacity behind it.
 
 ```mermaid actions={false}
 flowchart LR
@@ -20,7 +20,7 @@ flowchart LR
 
 <br />
 
-## What informs admission
+## What does admission weigh?
 
 | Input | What it describes |
 |---|---|
@@ -31,32 +31,24 @@ flowchart LR
 | [Shared capacity](/resources/capacity-pools/index) | The pool's current budget and the lane's allocation within it |
 | Operator controls | Temporary caps or a pause applied to the lane |
 
-Delivery evidence is available from the first action. Linked metrics can widen that view when they are current and have a credible relationship with the work. Every active boundary must permit release.
-
 ## Running and unsettled capacity
 
-Running and unsettled are two overlapping reservations for admitted work.
+In addition, Admission takes great care to measure two important counters.
 
-| Reservation | What it includes | What it protects |
-|---|---|---|
-| Running | Delivery contact currently in progress | The destination's ability to accept concurrent deliveries |
-| Unsettled | Running work and handed-off work awaiting a final outcome | The total unfinished exposure carried by the destination |
+| Counter | What it includes
+|---|---|
+| Running | Delivery contact currently in progress |
+| Unsettled | Running work and handed-off work awaiting a final outcome |
 
-A webhook that acknowledges work in its response may use running capacity only briefly. A webhook that accepts work for later settlement continues to occupy unsettled capacity after the response. An SDK listener occupies unsettled capacity while a claimed delivery remains open.
+A destination that acknowledges work in its response may use running capacity only briefly. A destination that accepts work for later settlement continues to occupy unsettled capacity after the response. For example, an work given to one of your SDK listeners, will be counted as unsettled until the work is marked completed, either by you, or in the case of `Defer`, if you stop replying.
 
 Both reservations apply. A destination may have room to begin another delivery while carrying too much unfinished work, or it may have unfinished-work room while its delivery contacts are already busy.
 
-## Release pace
+## Lanes
 
-Where the destination supports pacing, admission also controls how quickly new delivery attempts begin. A destination can support several deliveries in progress while still needing new deliveries to begin farther apart.
+Lanes are described in detail [here](/resources/lanes/index).
 
-For destination types that expose rate-limit responses or retry guidance, this can slow the release pace. Recent delivery behavior helps Arklow determine when that pace can increase again. An action can still wait for its release time when both reservations have room.
 
-## Lane and pool boundaries
-
-The [lane](/resources/lanes/index) keeps one customer, tenant, region, or workload scope separate at one destination. Its reservations, delivery history, pacing, and temporary controls remain local to that scope. Admission also respects eligible work already waiting in the lane.
-
-A [capacity pool](/resources/capacity-pools/index) represents supply shared by one or more destinations. When the pool is constrained, its current allocation can narrow the amount of work a lane may release. The lane and pool boundaries both apply.
 
 ## Waiting and recovery
 

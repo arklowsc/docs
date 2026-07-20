@@ -35,37 +35,24 @@ The variant is used by [HTTP ingress](/resources/sources/arklow/ingress), queue 
 
 ### Schema
 
-A definition can carry a JSON Schema for its payload. Arklow validates incoming payloads before accepting the work. An empty schema accepts any JSON payload.
-
-Schema validation belongs at the boundary: invalid work is rejected before it enters the action lifecycle or reaches a destination.
-
+Schemas are optional. When you use them, you can ensure that work entering Arklow matches the required shape, or it is thrown away. We recommend that you rely upon existing schema checks in your pipeline, using this feature only for added protection.
 ### Aliases
 
-Aliases record other names associated with a definition. They help keep related identifiers visible during maintenance or a naming migration.
+Aliases can be used to temporarily associated new variant identifiers with the current action. Often this can be useful for migrations, or moving old work to new actions.
 
-The variant remains canonical. Callers should continue to ingest work under the variant unless their integration is deliberately moved to another definition.
+<Warning>
+Aliases are meant to be used for migration, or for maintenance reasons. They will take priority over existing Action Variant names. This can cause unintended effects, or deliver work to the work Action.
+</Warning>
 
 ### Version
 
-Definitions begin at version `1`, and an update advances the version by one. When ingress omits the version, Arklow uses the current version for that variant. A caller can include the version to assert which current contract it expects.
+Definitions begin at version `1`. When incoming work omits the version, Arklow uses the current version for that variant. A caller can include the version to assert which current contract it expects.
 
-Advance the version when the definition's contract changes. Keep the variant stable while the work still means the same thing.
+If a version, for whatever reasons becomes invalid, or unavailable, Arklow will use the latest version.
 
 ## Flow configuration
 
-The definition's **Flow** links its destinations and [rules](/resources/rules/index). Rules can add tags, change the payload, select a destination, skip the current dispatch, or terminate the action. Arklow uses the definition's default destination when no rule selects one.
-
-The selected destination resolves the action's [lane](/resources/lanes/index) from the final tags using its complete-tag or partition-tag identity mode.
-
-<Note>
-Flow configuration is a UI-only feature that visualizes the entire Action, and all things connected to it.
-</Note>
-
-## Action records and runs
-
-Each accepted unit of work receives its own action ID. In the dashboard, these records appear as runs under the definition.
-
-The record keeps the payload and tags supplied at ingress, plus the destination and attempt history that develop as it moves through the flow. The definition remains the reusable contract; the run shows the state of one accepted unit.
+Flow is a UI-only feature that visualizes the entire Action, and all how work moves through it. We recommend that you use it initially to configure your first actions, before moving to API/Terraform based configurations.
 
 ## Lifecycle
 

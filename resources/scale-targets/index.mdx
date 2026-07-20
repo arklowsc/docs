@@ -8,14 +8,6 @@ A scale target connects a capacity pool to infrastructure that can change the su
 
 Each target identifies one scalable resource, the range Arklow may operate within, and the connection used to observe and change it.
 
-## Pool ownership
-
-Every scale target belongs to one capacity pool. The target should change capacity that serves the destinations in that pool.
-
-For example, a pool containing destinations backed by one model deployment can own the target for that deployment. Destinations backed by unrelated deployments belong in separate pools with separate targets.
-
-One pool can have several scale targets when separate components contribute capacity to the same work. A metric binding can identify the component represented by each target.
-
 ## Scale targets and autoscaling
 
 Many platforms already include an autoscaler. Arklow can work with that controller or request a replica count directly, depending on the target type.
@@ -27,41 +19,41 @@ Many platforms already include an autoscaler. Arklow can work with that controll
 
 Admission control remains active while new capacity provisions. Work can wait during that interval and resume as the destination becomes ready.
 
-## Target configuration
-
-| Dashboard area | Configuration |
-|---|---|
-| **Name** | A required, unique name. The name stays fixed after creation. |
-| **Provider** | The platform and scaling mode. The provider stays fixed after creation. |
-| **Authentication** | A credential compatible with the selected provider. |
-| **Capacity** | The destination or shared pool served by the scalable resource. |
-| **Metric Binding** | A metric source, query, and optional tag projection. |
-| **Scaling** | A minimum of `0` or more replicas and a maximum of at least `1`. The minimum must be at or below the maximum. |
-
-The minimum and maximum form the target's **scale envelope**. Recommendations, accepted proposals, and automatic changes remain within this range.
-
 ## Metric binding
 
-A target can bind to a query from one of your [metric sources](/resources/metrics/index). The query identifies measurements that describe the scalable resource.
-
-If a query returns measurements for several resources, add a tag projection. The projection names the metric tag and value that select this target:
+A pool holds one scale target per resource that serves its work. The binding tells each target which measurements are about its resource: a query from one of your [metric sources](/resources/metrics/index), and the tag value that identifies the resource in what the query returns.
 
 ```text
-query: company.perf.models
-tag projection: model_id=M1
+target: model-a   query: company.perf.models   matches: model_id=M1
+target: model-b   query: company.perf.models   matches: model_id=M2
+target: model-c   query: company.perf.models   matches: model_id=M3
 ```
 
-This binding assigns measurements tagged `model_id=M1` to the target. It applies only to target selection; work tags and routing remain unchanged. The projection key and value must be set together.
+Let's follow one action from arrival to the target that serves it:
 
-A binding is optional. Pool demand remains available without one; add a binding when a query covers several resources and this target needs one matching series.
+1. An action tagged `{customer_id=C1, model_id=M1}` routes to a destination in this pool.
+2. Its [metric policy](/resources/metrics/index) matches those tags to series tags by name, selecting `request_latency{customer_id=C1, model_id=M1}`.
+3. The target matching `model_id=M1` watches that series.
+4. When the work pushes that series into pressure, reflecting the actual part of that infrastructure, `model_id=M1` grows.
 
-## Proposals and Casper
+The `model_id` on the action reached the target through the series: the policy carried the value across on the shared name, and the target matched it. The `customer_id` traveled the same way but does a different job; it says whose work the series describes.
 
-With Casper disabled, scale changes appear under [**Proposals**](https://app.arklow.io/dashboard/proposals) for review. Accepting a proposal applies the change to the provider. Saving changes to a target may reconcile the provider with the target's current settings.
+One resource serves many customers. Two actions, `{customer_id=C1, model_id=M2}` and `{customer_id=C2, model_id=M2}`, produce two series: `request_latency{customer_id=C1, model_id=M2}` and `request_latency{customer_id=C2, model_id=M2}`. Both carry `model_id=M2`, so both belong to target model-b, and pressure on either one grows it. A customer with a private resource has a different `model_id` on their series, and with it their own target.
 
-Casper is the organization-wide setting that permits automatic scale changes. When it is enabled, Arklow can apply changes within each target's envelope without waiting for approval.
+## Pool ownership
 
-A provider-side change may cause Arklow to reapply the accepted value. Deleting a target stops future writes. The provider retains its last setting.
+Every scale target belongs to one capacity pool. The target should change capacity that serves the destinations in that pool.
+
+For example, a pool containing destinations backed by one model deployment can own the target for that deployment. Destinations backed by unrelated deployments belong in separate pools with separate targets.
+
+One pool can have several scale targets when separate components contribute capacity to the same work. A metric binding can identify the component represented by each target.
+
+## Proposals
+
+By default, the Engine never changes your infrastructure without your permission. Instead, it makes [**Proposals**](https://app.arklow.io/dashboard/proposals) for your review.
+
+[When given permission](https://app.arklow.io/dashboard/settings?tab=organization), the Engine will instead just make the changes on your behalf.
+
 
 ## Providers
 
@@ -95,13 +87,7 @@ A provider-side change may cause Arklow to reapply the accepted value. Deleting 
     Connect another platform through a small HTTPS contract.
   </Card>
 </Columns>
-
-## State and history
-
-The target page shows observed replicas, the last observation, current and requested scale values, the last write outcome, health conditions, and adjustment history. Together, these fields distinguish the requested setting from the capacity the provider currently reports.
-
-The pool page combines adjustments from every target attached to that pool. Dashboard notifications call out conditions that need attention, including a stopped endpoint or sustained pressure with no matching target.
-
+ 
 ## Create a scale target
 
 <Steps>

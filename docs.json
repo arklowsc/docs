@@ -28,7 +28,8 @@
             "pages": [
               "fundamentals/overview",
               "fundamentals/admission-control",
-              "fundamentals/delivery-guarantees"
+              "fundamentals/delivery-guarantees",
+              "fundamentals/acknowledgement-and-deferral"
             ]
           },
           {

@@ -53,11 +53,17 @@ Lane advice sets temporary running or unsettled caps. Advice can provide a lifet
 
 Advice with the exact partition tag applies to one lane. Advice submitted without tags can apply across the destination's partitioned lanes.
 
+<Warning>
+Lane Advice should be used rarely, if at all. It serves only for direct influence over Admission Control, and can cause harmful outcomes if used improperly.
+</Warning>
+
 ## Cardinality
 
-A destination can hold at most **50,000 lane identities**. Ingress rejects a new identity beyond that limit with `TAG_CARDINALITY_EXCEEDED`; existing identities continue to accept work.
+A destination can hold at most **50,000 lanes**. Ingress will accept the work, but raise the error `TAG_CARDINALITY_EXCEEDED`. New tags won't be recorded, and will default to the default destination.
 
 Request identifiers, timestamps, and other unbounded values should stay outside lane identity. A partition tag can keep descriptive tags on the action while bounding lane identity to the selected values.
+
+Arklow can always raise this limit on request, and exists to prevent unbounded lane generation.
 
 <Columns cols={2}>
   <Card

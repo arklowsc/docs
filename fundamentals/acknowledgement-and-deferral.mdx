@@ -1,0 +1,131 @@
+---
+title: "Acknowledgement"
+description: ""
+---
+
+Acknowledging work is important to letting Arklow trust one of its [core signals](/fundamentals/admission-control#what-does-admission-weigh).
+
+There are two main patterns we recommend you use that you can tailor for your own use cases.
+
+## Pattern A: Work is performed synchronously.
+
+When you use this pattern, acknowledging work says to Arklow:
+
+* I have received the work.
+* The work has been done.
+
+In other words, the same block of code/service that receives the work, is also performing and acknowledging the outcome of that work.
+
+<Tabs>
+  <Tab title="SDK">
+    The handler performs the work, then tells Arklow the work is done.
+
+    ```typescript
+    // Other SDK languages follow the same form.
+    const running = listener.listen(
+      { namespace: "billing", maxOutstanding: 16 },
+      async (delivery) => {
+        await processInvoice(delivery.payload);
+        await delivery.ack();
+      },
+    );
+    ```
+    While the handler is open, the client renews the claim's lease automatically, up to the action timeout. `extend()` sends an explicit `Modack` when you want the deadline moved by a known amount:
+
+    ```typescript
+    await delivery.extend(120_000);
+    ```
+
+    A handler that returns cleanly acks on its own. A handler that fails with an error, or a lease that expires after a crash, will trigger a redelivery.
+  </Tab>
+  <Tab title="HTTP">
+    See the [Webhook](/resources/destinations/http/webhook) destination to learn more.
+
+    To acknowledge work, you will reply with:
+    ```http
+    HTTP/1.1 200 OK
+    x-arklow-signaling: ack
+    ```
+
+    If the work needs more time than the request can hold open, respond with `mod_ack` and settle later through [POST /v1/ack](/api-reference/ingress/post-v1ack), using the delivery's `x-arklow-actionid` and `x-arklow-attempt`:
+
+    ```http
+    HTTP/1.1 200 OK
+    x-arklow-signaling: mod_ack
+    x-arklow-signaling-val: 120
+    ```
+
+    The action holds unsettled for the value in seconds.
+
+    An endpoint that returns without sending acks, whether due to an error or timeout, will trigger a redelivery.
+  </Tab>
+</Tabs>
+
+## Pattern B: Work is performed asynchronously.
+
+Arklow allows you to tell it to `Defer` work. Deferring work tells Arklow:
+
+* I have received the work.
+* I will keep telling you I have it.
+* Arklow is no longer responsible for redeliveries.
+* If I stop telling you I have it, consider it done.
+
+This is useful for long running events that another part of your platform is handling, or would be impractical to handle in the same place as your listener. 
+
+All that is required after `Deferring` is to periodically check in with Arklow using `Modack`. 
+
+<Note>
+When using `Defer`, missing the `Modack` lease, or failing to continue doing so results in the work being marked done. For high throughput work, it's recommended that you don't rely upon the expiry of the `Modack` to signal `Ack`, as this can affect the view of the Admission Controller.
+</Note>
+
+
+<Tabs>
+  <Tab title="SDK">
+    Hand the work off, then defer the delivery.
+
+    ```typescript
+    // Other SDK languages follow the same form.
+    listener.listen(
+      { namespace: "billing" },
+      async (delivery) => {
+        await invoicePipeline.submit({
+          actionRecordId: delivery.actionRecordId,
+          attempt: delivery.attempt,
+          payload: delivery.payload,
+        });
+        await delivery.defer();
+      },
+    );
+    ```
+  </Tab>
+  <Tab title="HTTP">
+    Respond to the delivery without an ack, then defer through the ingress API using the `x-arklow-actionid` and `x-arklow-attempt` from the request. A response that acks settles the attempt and cannot be deferred.
+
+    ```bash
+    curl -X POST https://ingress.arklow.io/v1/defer \
+      -H "X-Arklow-Auth: $ARKLOW_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"action_record_id": "247001", "attempt": 0}'
+    ```
+  </Tab>
+</Tabs>
+
+### After the defer
+
+Any process holding the identifiers settles the action through the ingress API:
+
+| Call | Effect |
+|---|---|
+| [POST /v1/modack](/api-reference/ingress/post-v1modack) | Extends the record's deadline by `mod_ack` seconds while the work continues |
+| [POST /v1/ack](/api-reference/ingress/post-v1ack) | Marks the action as succeeded |
+
+```bash
+curl -X POST https://ingress.arklow.io/v1/ack \
+  -H "X-Arklow-Auth: $ARKLOW_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"action_record_id": "247001", "attempt": 0}'
+```
+
+<Note>
+After using a `Defer`, `NACK` / `No Acknowledgement` won't be accepted. Deferring work signals to Arklow that you are taking custody of the work, and will not be expecting redelivery.
+</Note>
