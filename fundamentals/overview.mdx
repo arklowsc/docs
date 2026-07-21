@@ -7,7 +7,7 @@ Arklow accepts work before it reaches the system that will perform it. Each acce
 
 ```mermaid actions={false}
 flowchart LR
-    S["HTTP, queue, MCP"] --> A["Action"]
+    S["Sources \n (e.g. API, Queues)"] --> A["Action"]
     A --> R["Rules"]
     R --> L["Lane"]
     L --> G["Admission"]
@@ -38,7 +38,7 @@ Here's the scenario: We're a platform that serves two customers, *Orange Labs* a
 
 ### Acceptance
 
-We define `inference.requested` as an [action definition](/resources/actions/index). This allows Arklow to have a way to refer to this body of work, without needing to know exactly what's being done.
+We define `document.generate` as an [action definition](/resources/actions/index). This allows Arklow to have a way to refer to this body of work, without needing to know exactly what's being done.
 
 Work can be sent through over [API](/resources/sources/arklow/ingress) or taken from a connected [source](/resources/sources/index) (like a queue). Once we get confirmation from Arklow that it's been accepted, we can trust it will reach us as fast as we are capable of handling it.
 
