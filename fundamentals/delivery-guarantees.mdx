@@ -13,29 +13,33 @@ Each delivery is an attempt. Attempts begin at `0` and increase when Arklow rede
 
 Build consumers to handle repeated delivery safely. Where the work has an external side effect, use the action ID or a stable business identifier as an idempotency key. The attempt number identifies only one delivery of that work; use action-level identity for idempotency.
 
-## Attempt-aware settlement
+## Settlement Race Conditions
 
 An acknowledgement, rejection, or deadline extension names both the action and its attempt number. It applies only while that attempt is authoritative.
 
-This prevents a delayed acknowledgement from attempt `0` from completing an action that has already moved on to attempt `1`. Arklow refuses stale settlements, protecting the newer delivery.
+This prevents a delayed acknowledgement from attempt `0` from completing an action that has already moved on to attempt `1`.
 
-The destination can settle an attempt in three ways:
+<Tip>
+One pattern to understand if your work is still authoritative is to try send a `Modack`. If it rejects, you can be confident that another attempt may be in progress, and that you should not continue your attempt.
+
+Be careful to not overuse this pattern when other parts of your system may be sending `Modack` as well.
+</Tip>
+
+## Settlement Verbs
+
+The destination can respond to incoming work in four ways:
 
 | Signal | Result |
 |---|---|
 | Ack | The action succeeds |
 | Nack | The action is retried, or fails when the rejection is permanent |
 | Modack | The current attempt receives more time to settle |
+| [Defer](/fundamentals/acknowledgement-and-deferral#pattern-b-work-is-performed-asynchronously) | The current attempt will be authoritative, and no more redeliveries will be made. |
 
 ## Source deduplication
 
-Queue sources identify work using the source and the provider's message ID. If SQS or Pub/Sub redelivers the same source message after acceptance, the redelivery resolves to the original action.
+Some sources, like those that resemble a Queue, identify work with their provider's message ID. If for example GCP Pub/Sub or AWS SQS redeliver the same source message after acceptance, the redelivery resolves to the original action.
 
-[HTTP ingress](/resources/sources/arklow/ingress) has no equivalent idempotency key. Every accepted POST creates a new action, even when two requests carry identical payloads.
-
-Source deduplication and destination delivery answer different questions:
-
-- Source deduplication prevents one queue message from creating multiple actions.
-- At-least-once delivery allows one accepted action to have multiple delivery attempts.
-
-An action created once may still be delivered more than once. Consumers must therefore remain idempotent even when work arrived through a deduplicated source.
+<Note>
+[HTTP ingress](/resources/sources/arklow/ingress) has no equivalent deduplication. Every accepted POST creates a new action, even when two requests carry identical payloads. 
+</Note>

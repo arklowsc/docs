@@ -23,7 +23,7 @@ In other words, the same block of code/service that receives the work, is also p
     ```typescript
     // Other SDK languages follow the same form.
     const running = listener.listen(
-      { namespace: "billing", maxOutstanding: 16 },
+      { namespace: "billing" },
       async (delivery) => {
         await processInvoice(delivery.payload);
         await delivery.ack();

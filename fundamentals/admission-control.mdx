@@ -5,6 +5,8 @@ description: ""
 
 Admission control determines when an accepted action may leave Arklow. It evaluates the action's lane, the destination's recent behavior, and any shared capacity behind it.
 
+Decisions made by admission control are done so quickly. For performance questions, our [SDK](/resources/destinations/sdk/index#performance) documentation describes what to expect.
+
 ```mermaid actions={false}
 flowchart LR
     A[Accepted work] --> G{Admission}
@@ -33,14 +35,14 @@ flowchart LR
 
 ## Running and unsettled capacity
 
-In addition, Admission takes great care to measure two important counters.
+In addition, Admission takes great care to measure two important observables:
 
-| Counter | What it includes
+| Metric | What it includes
 |---|---|
 | Running | Delivery contact currently in progress |
 | Unsettled | Running work and handed-off work awaiting a final outcome |
 
-A destination that acknowledges work in its response may use running capacity only briefly. A destination that accepts work for later settlement continues to occupy unsettled capacity after the response. For example, an work given to one of your SDK listeners, will be counted as unsettled until the work is marked completed, either by you, or in the case of `Defer`, if you stop replying.
+A destination that acknowledges work in its response may use running capacity only briefly. A destination that accepts work for later settlement continues to occupy unsettled capacity after the response. For example, work given to one of your SDK listeners, will be counted as unsettled until the work is marked completed, either by you, or in the case of `Defer`, if you stop replying.
 
 Both reservations apply. A destination may have room to begin another delivery while carrying too much unfinished work, or it may have unfinished-work room while its delivery contacts are already busy.
 

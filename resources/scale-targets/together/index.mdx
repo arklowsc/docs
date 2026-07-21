@@ -31,25 +31,25 @@ Arklow reads the endpoint state and its configured autoscaling range. Together A
 
 Scale changes update the endpoint's minimum and maximum replicas together. Arklow pauses changes while the endpoint is `STOPPED`; start the endpoint in Together AI to resume scaling.
 
-## Add a Together AI target
+## Attach a Together AI target
 
 <Steps>
-  <Step title="Open scale targets">
-    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **Together AI**.
+  <Step title="Enable Together AI">
+    Open the HTTP Auth Headers credential and enable **Together AI** under **Scale target providers**.
   </Step>
-  <Step title="Identify the endpoint">
-    Enter the **Endpoint ID**.
+  <Step title="Sync the inventory">
+    Click **Sync now** and open [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets).
   </Step>
-  <Step title="Select authentication">
-    Choose the HTTP Auth Headers credential containing your Together AI bearer token.
+  <Step title="Choose the endpoint">
+    Select the endpoint under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
     Choose the destination or shared pool served by this endpoint.
   </Step>
-  <Step title="Set the envelope">
+  <Step title="Set the replica range">
     Enter the minimum and maximum replica counts available to the Together AI autoscaler.
   </Step>
-  <Step title="Save">
-    Create the target and confirm that **Last observed** advances and **Health** shows no credential or endpoint error.
+  <Step title="Attach">
+    Attach the target and confirm that **Last observed** advances and **Health** shows no credential or endpoint error.
   </Step>
 </Steps>

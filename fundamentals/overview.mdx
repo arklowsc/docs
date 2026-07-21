@@ -30,11 +30,11 @@ Arklow helps manage these common infrastructure challenges:
 
 - Product instability caused by constantly changing customer usage habits.
 - Overprovisioning, or underprovisioning of infrastructure resources to meet these changing needs.
-- Maximizing the useful capacity of your product's resources.
-
-Here's the scenario: We're a platform that serves two customers, *Orange Labs* and *Kite AI*. As part of our product, we need to use and serve different types of Models, and different types of infrastructure components.
+- Maximizing the useful capacity of your infrastructure's resources.
 
 ## First Steps
+
+Here's the scenario: We're a platform that serves two customers, *Orange Labs* and *Kite AI*. As part of our product, we need to use and serve different types of Models, and different types of infrastructure components.
 
 ### Acceptance
 
@@ -89,9 +89,9 @@ A lane belongs to one destination. Orange Labs work routed to a second destinati
 
 ## Admission
 
-Admission evaluates the selected lane and the destination's [capacity pool](/resources/capacity-pools/index). An action moves to delivery only when both boundaries have room.
-
 The decision to release work comprises multiple different inputs. [**Admission control**](/fundamentals/admission-control) explains how these inputs affect release.
+
+Admission evaluates the selected lane, and the destination's [capacity pool](/resources/capacity-pools/index) if available, to know when to release work.
 
 ### Waiting
 

@@ -32,22 +32,22 @@ You can place these permissions in a custom role scoped to the project containin
 ## Add a desired-count target
 
 <Steps>
-  <Step title="Open scale targets">
-    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **GCP managed instance group (manual)**.
+  <Step title="Enable managed instance groups">
+    Open the GCP Service Account credential and enable **Google Cloud managed instance groups** under **Scale target providers**.
   </Step>
-  <Step title="Identify the group">
-    Enter its project, location type, location, and instance group manager.
+  <Step title="Sync the inventory">
+    Click **Sync now** and open [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets).
   </Step>
-  <Step title="Select authentication">
-    Choose the GCP Service Account credential with permission to read and resize the group.
+  <Step title="Choose the group">
+    Select the managed instance group under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
     Choose the destination or shared pool served by the group.
   </Step>
-  <Step title="Set the envelope">
+  <Step title="Set the replica range">
     Enter the minimum and maximum group sizes Arklow may request.
   </Step>
-  <Step title="Save">
-    Create the target and confirm that the observed target size belongs to the expected group.
+  <Step title="Attach">
+    Attach the target and confirm that the observed target size belongs to the expected group.
   </Step>
 </Steps>

@@ -39,4 +39,6 @@ Arklow reads the group's target size, status, and current instance actions. Pend
 
 Use **GCP managed instance group** when the group has a Google Cloud autoscaler. Arklow changes the autoscaler's minimum and maximum, and the autoscaler remains responsible for the live count.
 
-Use **GCP managed instance group (manual)** when the group is resized directly. Arklow requests a concrete target size within the target's envelope.
+Use **GCP managed instance group (manual)** when the group is resized directly. Arklow requests a concrete target size within the target's replica range.
+
+Arklow discovers both modes from the managed instance group inventory. A group with an attached autoscaler uses the autoscaler-floor mode; a group without one uses desired-count mode.

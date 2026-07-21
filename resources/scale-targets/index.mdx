@@ -63,14 +63,14 @@ By default, the Engine never changes your infrastructure without your permission
     icon="server"
     href="/resources/scale-targets/baseten/index"
   >
-    Adjust the autoscaling range for a model deployment.
+    Adjust the replica range for a model deployment.
   </Card>
   <Card
     title="Together AI"
     icon="microchip"
     href="/resources/scale-targets/together/index"
   >
-    Adjust the autoscaling range for a dedicated endpoint.
+    Adjust the replica range for a dedicated endpoint.
   </Card>
   <Card
     title="Google Cloud"
@@ -88,31 +88,33 @@ By default, the Engine never changes your infrastructure without your permission
   </Card>
 </Columns>
  
-## Create a scale target
+## Attach a provider target
 
 <Steps>
-  <Step title="Prepare the pool">
-    Create the destinations the target will serve. Group them into a shared pool only when they use the same underlying capacity.
+  <Step title="Open the credential">
+    Create or open the credential that can read the provider account.
   </Step>
-  <Step title="Open scale targets">
-    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets) and click **New scale target**.
+  <Step title="Enable the provider">
+    Under **Scale target providers**, enable Baseten, Together AI, or Google Cloud managed instance groups.
   </Step>
-  <Step title="Choose the provider">
-    Select the platform and scaling mode. Enter the fields that identify the resource.
+  <Step title="Sync the inventory">
+    Click **Sync now**, then open [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets).
   </Step>
-  <Step title="Add authentication">
-    Select a compatible credential for provider observations and changes.
+  <Step title="Choose the resource">
+    Select the deployment, endpoint, or managed instance group under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
     Choose the destination or shared pool served by the target.
   </Step>
-  <Step title="Set the envelope">
+  <Step title="Set the replica range">
     Enter the minimum and maximum replica counts.
   </Step>
   <Step title="Bind a metric if needed">
     Select a metric query. Add a tag projection when the query covers several scalable resources.
   </Step>
-  <Step title="Save and observe">
-    Create the target, then review its observations and adjustment history.
+  <Step title="Attach">
+    Attach the target, then review its observations and adjustment history.
   </Step>
 </Steps>
+
+The two HTTP scale target kinds cannot enumerate customer-implemented endpoints. Create those targets with **New manual target**.

@@ -34,7 +34,7 @@ The status endpoint should report `current_replicas` when available and use `set
     Implement the shared status endpoint and the desired-count write endpoint.
   </Step>
   <Step title="Open scale targets">
-    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **HTTP scale API (desired)**.
+    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New manual target**, and select **HTTP scale API (desired)**.
   </Step>
   <Step title="Enter the endpoint">
     Provide the public HTTPS base URL of the scale API.
@@ -45,7 +45,7 @@ The status endpoint should report `current_replicas` when available and use `set
   <Step title="Select capacity">
     Choose the destination or shared pool served by this platform.
   </Step>
-  <Step title="Set the envelope">
+  <Step title="Set the replica range">
     Enter the minimum and maximum replica counts Arklow may request.
   </Step>
   <Step title="Save">

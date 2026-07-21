@@ -20,7 +20,7 @@ Each lane can drive approximately `24` messages per second, or `1440` messages p
 There isn't a maximum per-second limit. The maximum lanes that can be used by default, [are detailed here](/resources/lanes#cardinality).
 
 <Note>
-Lanes with zero outstanding work can up to 4 seconds to calibrate, and deliver work. Once calibrated, delivery latency has no added delay. Arklow does this to synchronize the Engine for the Lane. 
+Lanes with zero outstanding work for some time can take up to 4 seconds to calibrate, and deliver work. Once calibrated, delivery latency has no added delay.
 </Note>
 
 ## Authentication

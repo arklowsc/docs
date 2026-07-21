@@ -6,7 +6,7 @@ hideFooterPagination: true
 
 Arklow learns from delivery before you connect any metrics. It can see how long attempts remain running or unsettled, whether a destination accepts them, and when it begins to push back.
 
-Metrics add the view from inside your systems. They can show pressure in a worker fleet, model deployment, provider quota, or another resource before that pressure appears as an outright delivery failure.
+Metrics add the view from inside your systems. They can show pressure in a container, model deployment, provider quota, or some other resource before that pressure appears as degradation in your product.
 
 ## Metric model
 
@@ -25,35 +25,48 @@ request_latency{customer_id=C1, model_id=M2}
 request_latency{customer_id=C2, model_id=M1}
 ```
 
-The tags distinguish the streams. Keep the dimensions that identify a customer, deployment, endpoint, or other useful slice; exclude tags that only create noise, such as process or scrape-instance identifiers.
-
 ## Queries
 
-Create queries on the metric source's **Queries** tab. A query holds the provider expression, identity-tag exclusions, and an active or paused state.
+Create queries on the metric source's **Queries** tab. A query holds the expression to use against your metric source.
 
 Identity-tag exclusions remove selected provider tags when Arklow identifies a series. Use them when an operational tag changes without changing what the measurement represents.
+
+<Note>
+If you're using `Discover`, as detailed below - excluding tags that have high cardinality or aren't useful is recommended using the available dropdown on this screen.
+</Note>
 
 ## Action policies
 
 Open an action definition's **Metrics** tab and add a policy for a source query.
 
-<Tabs>
-  <Tab title="Discover">
-    Arklow considers the series returned by the query and looks for the ones that consistently describe the action's work.
+Arklow offers two unique modes for identifying relationships with your metrics. 
 
-    Use tag bindings when the work and metric use different names for the same dimension. A binding from action tag `customer` to series tag `customer_id` lets their values be compared without renaming either system.
-  </Tab>
+- `Manual` - You know what metrics/tags matters, and want Arklow to know it can just use what you already know to be correct.
+- `Discover` - You have a rough idea that this query relates to the work being done, but you're not sure tags or relationships matter.
+
+
+
+<Tabs>
   <Tab title="Manual">
-    You nominate eligible series with a selector. For example:
+    You pin known series with a selector of exact tag values. A series is eligible when it carries every key in the selector and its value for each key is one of the values you list:
 
     ```json
     {
-      "env": ["production"],
-      "service": ["inference"]
+      "customer_id": ["C1"],
+      "model_id": ["M1", "M2"]
     }
     ```
 
-    Manual selectors nominate eligible series; they grant no delivery authority on their own.
+    When a selector matches more series than the policy's maximum-series value allows, or matches several series with no maximum set, Arklow blocks the whole match rather than track a set you did not bound.
+
+    A pinned series grants no delivery authority on its own; authority still comes from proof against the work.
+  </Tab>
+  <Tab title="Discover">
+    Arklow considers the series returned by the query and looks for the ones that consistently describe the action's work.
+
+    The tags on your work tell Arklow which dimensions matter. A series sharing `model_id=M1` with your work is evaluated against exactly that slice of the work; a series with no shared tags is evaluated against the action as a whole.
+
+    Use tag bindings when the work and metric use different names for the same dimension. A binding from action tag `customer` to series tag `customer_id` lets their values be compared without renaming either system.
   </Tab>
 </Tabs>
 
@@ -71,7 +84,9 @@ If collection stops or a series becomes stale, its current verdict expires. A me
 
 A [scale target](/resources/scale-targets/index) can bind to one metric query and, when needed, one tag key and value that identify the resource it manages. This is separate from the tag that identifies whose work should be isolated.
 
-For example, `customer_id=C1` can identify the affected work while `model_id=M1` selects the deployment that can grow. Those dimensions answer different questions and should remain separate.
+For example, `customer_id=C1` can identify the affected work while `model_id=M1` selects the deployment that can grow.
+
+Provider inventory with a matching `model_id` is ordered ahead of unobserved resources. When pressure fires without a matching active target and exactly one visible inventory row matches, Arklow proposes attaching that resource to the pool and metric query. Ambiguous matches remain unselected.
 
 <Columns cols={2}>
   <Card

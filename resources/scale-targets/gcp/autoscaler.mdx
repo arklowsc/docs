@@ -27,22 +27,22 @@ You can place these permissions in a custom role scoped to the project containin
 ## Add an autoscaler target
 
 <Steps>
-  <Step title="Open scale targets">
-    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **GCP managed instance group**.
+  <Step title="Enable managed instance groups">
+    Open the GCP Service Account credential and enable **Google Cloud managed instance groups** under **Scale target providers**.
   </Step>
-  <Step title="Identify the group">
-    Enter its project, location type, location, instance group manager, and autoscaler name.
+  <Step title="Sync the inventory">
+    Click **Sync now** and open [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets).
   </Step>
-  <Step title="Select authentication">
-    Choose the GCP Service Account credential with permission to read the group and update its autoscaler.
+  <Step title="Choose the group">
+    Select the managed instance group under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
     Choose the destination or shared pool served by the group.
   </Step>
-  <Step title="Set the envelope">
+  <Step title="Set the replica range">
     Enter the minimum and maximum replicas available to the GCP autoscaler.
   </Step>
-  <Step title="Save">
-    Create the target and confirm that the observed target size belongs to the expected group.
+  <Step title="Attach">
+    Attach the target and confirm that the observed target size belongs to the expected group.
   </Step>
 </Steps>

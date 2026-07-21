@@ -26,7 +26,7 @@ Create an HTTP Auth Headers credential with the header Baseten expects for its A
 Authorization: Api-Key <api-key>
 ```
 
-Keep the key in the credential and select that credential when creating the target.
+Keep the key in the credential and enable Baseten under **Scale target providers**.
 
 ## Observations and changes
 
@@ -34,25 +34,25 @@ Arklow reads the deployment status and active replica count. A deployment in a t
 
 Scale changes update Baseten's minimum and maximum replicas together. The observed active replica count may take time to respond while Baseten provisions or removes replicas.
 
-## Add a Baseten target
+## Attach a Baseten target
 
 <Steps>
-  <Step title="Open scale targets">
-    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **Baseten**.
+  <Step title="Enable Baseten">
+    Open the HTTP Auth Headers credential and enable **Baseten** under **Scale target providers**.
   </Step>
-  <Step title="Identify the deployment">
-    Enter the **Model ID** and **Deployment ID**.
+  <Step title="Sync the inventory">
+    Click **Sync now** and open [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets).
   </Step>
-  <Step title="Select authentication">
-    Choose the HTTP Auth Headers credential containing your Baseten API key.
+  <Step title="Choose the deployment">
+    Select the deployment under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
     Choose the destination or shared pool served by this deployment.
   </Step>
-  <Step title="Set the envelope">
+  <Step title="Set the replica range">
     Enter the minimum and maximum replica counts available to the Baseten autoscaler.
   </Step>
-  <Step title="Save">
-    Create the target and confirm that **Last observed** advances without a credential or deployment error.
+  <Step title="Attach">
+    Attach the target and confirm that **Last observed** advances without a credential or deployment error.
   </Step>
 </Steps>

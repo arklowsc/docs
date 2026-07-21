@@ -24,7 +24,7 @@ Content-Type: application/json
 }
 ```
 
-Both values come from the accepted scale setting and remain within the target's configured envelope.
+Both values come from the accepted scale setting and remain within the target's configured replica range.
 
 Return a `2xx` response after your platform accepts the new range. The status endpoint can return `settled: false` while the autoscaler or underlying capacity converges.
 
@@ -35,7 +35,7 @@ Return a `2xx` response after your platform accepts the new range. The status en
     Implement the shared status endpoint and the autoscaling write endpoint.
   </Step>
   <Step title="Open scale targets">
-    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New scale target**, and select **HTTP scale API (floor)**.
+    Go to [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets), click **New manual target**, and select **HTTP scale API (floor)**.
   </Step>
   <Step title="Enter the endpoint">
     Provide the public HTTPS base URL of the scale API.
@@ -46,7 +46,7 @@ Return a `2xx` response after your platform accepts the new range. The status en
   <Step title="Select capacity">
     Choose the destination or shared pool served by this platform.
   </Step>
-  <Step title="Set the envelope">
+  <Step title="Set the replica range">
     Enter the minimum and maximum replicas available to your autoscaler.
   </Step>
   <Step title="Save">
