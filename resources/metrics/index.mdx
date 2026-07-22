@@ -59,7 +59,7 @@ Arklow offers two unique modes for identifying relationships with your metrics.
 
     When a selector matches more series than the policy's maximum-series value allows, or matches several series with no maximum set, Arklow blocks the whole match rather than track a set you did not bound.
 
-    A pinned series grants no delivery authority on its own; authority still comes from proof against the work.
+    A pinned series grants no delivery authority on its own; authority still comes from proof against the work. A health declaration is the exception: a manual policy that declares what unhealthy means for a series and what recovery means, each with its own threshold and sustain window, establishes the health state directly, and a sustained unhealthy state carries the same verdict authority as a proven relationship. Proof evidence ranks the responses; it does not gate the declared state.
   </Tab>
   <Tab title="Discover">
     Arklow considers the series returned by the query and looks for the ones that consistently describe the action's work.
