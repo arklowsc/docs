@@ -4,22 +4,22 @@ description: ""
 hideFooterPagination: true
 ---
 
-Arklow can change a Google Cloud managed instance group through its autoscaler or through the group's target size. Choose the mode that matches the controller already responsible for the group.
+Arklow can command a Google Cloud managed instance group through its autoscaler or through the group's target size. Choose the mode that matches the controller already responsible for the group.
 
 <Columns cols={2}>
   <Card
-    title="Autoscaler floor"
+    title="Autoscaler"
     icon="arrows-up-down"
     href="/resources/scale-targets/gcp/autoscaler"
   >
-    Adjust the range available to an existing GCP autoscaler.
+    Command a replica count through an existing GCP autoscaler.
   </Card>
   <Card
     title="Desired count"
     icon="hashtag"
     href="/resources/scale-targets/gcp/desired"
   >
-    Resize a managed instance group to a concrete target size.
+    Command a managed instance group's target size directly.
   </Card>
 </Columns>
 
@@ -37,8 +37,8 @@ Arklow reads the group's target size, status, and current instance actions. Pend
 
 ## Mode selection
 
-Use **GCP managed instance group** when the group has a Google Cloud autoscaler. Arklow changes the autoscaler's minimum and maximum, and the autoscaler remains responsible for the live count.
+Use **GCP managed instance group** when the group has a Google Cloud autoscaler. For each command, Arklow sets the autoscaler's `minNumReplicas` and `maxNumReplicas` to the same replica count. This mode supports replica counts of 1 or more.
 
-Use **GCP managed instance group (manual)** when the group is resized directly. Arklow requests a concrete target size within the target's replica range.
+Use **GCP managed instance group (manual)** when the group is resized directly. Arklow requests a concrete target size, including 0 when the configured permission bounds allow it.
 
-Arklow discovers both modes from the managed instance group inventory. A group with an attached autoscaler uses the autoscaler-floor mode; a group without one uses desired-count mode.
+Arklow discovers both modes from the managed instance group inventory. A group with an attached autoscaler uses autoscaler mode; a group without one uses desired-count mode.

@@ -4,19 +4,18 @@ description: ""
 hideFooterPagination: true
 ---
 
-The Baseten target adjusts the autoscaling range of one model deployment. Baseten continues choosing the live replica count within that range.
+The Baseten target commands the replica count of a model's production deployment.
 
 ## Configuration
 
 | Field | Value |
 |---|---|
-| **Model ID** | The Baseten model that owns the deployment. |
-| **Deployment ID** | The deployment whose autoscaling settings Arklow may change. |
+| **Model ID** | The Baseten model whose production deployment Arklow may observe and change. |
 | **Credential** | An [HTTP Auth Headers credential](/resources/credentials/http/auth-headers). |
-| **Minimum replicas** | The lowest autoscaling value Arklow may apply. |
-| **Maximum replicas** | The highest autoscaling value Arklow may apply. |
+| **Minimum replicas** | The lowest replica count Arklow may command. The minimum can be `0`. |
+| **Maximum replicas** | The highest replica count Arklow may command. |
 
-The model and deployment IDs are available in Baseten's deployment details and API URLs.
+The model ID is available in Baseten's model details and API URLs. Arklow uses the model's `production` deployment alias, so you do not need a deployment ID.
 
 ## Authentication
 
@@ -30,9 +29,11 @@ Keep the key in the credential and enable Baseten under **Scale target providers
 
 ## Observations and changes
 
-Arklow reads the deployment status and active replica count. A deployment in a transitional state, such as deploying or updating, is allowed to finish before another change is applied.
+Arklow reads the production deployment's status and active replica count. A deployment in a transitional state, such as deploying or updating, is allowed to finish before another change is applied.
 
-Scale changes update Baseten's minimum and maximum replicas together. The observed active replica count may take time to respond while Baseten provisions or removes replicas.
+For a command of `1` or more, Arklow sets Baseten's minimum and maximum replicas to that value. For a zero command, Arklow uses Baseten's scale-to-zero shape: a minimum of `0` and a maximum of `1`.
+
+The observed active replica count may take time to respond while Baseten provisions or removes replicas.
 
 ## Attach a Baseten target
 
@@ -43,14 +44,14 @@ Scale changes update Baseten's minimum and maximum replicas together. The observ
   <Step title="Sync the inventory">
     Click **Sync now** and open [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets).
   </Step>
-  <Step title="Choose the deployment">
-    Select the deployment under **Provider inventory** and click **Attach**.
+  <Step title="Choose the model">
+    Select the model under **Provider inventory** and click **Attach**. Arklow targets its production deployment.
   </Step>
   <Step title="Select capacity">
-    Choose the destination or shared pool served by this deployment.
+    Choose the destinations served by this deployment, or an existing pool. Choosing destinations creates a new pool with those destinations as its members.
   </Step>
-  <Step title="Set the replica range">
-    Enter the minimum and maximum replica counts available to the Baseten autoscaler.
+  <Step title="Set permission bounds">
+    Enter the lowest and highest replica counts Arklow may command.
   </Step>
   <Step title="Attach">
     Attach the target and confirm that **Last observed** advances without a credential or deployment error.

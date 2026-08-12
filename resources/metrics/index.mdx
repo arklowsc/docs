@@ -86,7 +86,7 @@ A [scale target](/resources/scale-targets/index) can bind to one metric query an
 
 For example, `customer_id=C1` can identify the affected work while `model_id=M1` selects the deployment that can grow.
 
-Provider inventory with a matching `model_id` is ordered ahead of unobserved resources. When pressure fires without a matching active target and exactly one visible inventory row matches, Arklow proposes attaching that resource to the pool and metric query. Ambiguous matches remain unselected.
+Provider inventory with a matching `model_id` is ordered ahead of unobserved resources. When pressure fires without a matching active target and exactly one visible inventory item matches, Arklow raises a notification that links to that item. Attach it to the pool, then bind the metric query if this pressure signal should drive it.
 
 <Columns cols={2}>
   <Card

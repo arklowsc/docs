@@ -6,16 +6,16 @@ hideFooterPagination: true
 
 A scale target connects a capacity pool to infrastructure that can change the supply behind its destinations.
 
-Each target identifies one scalable resource, the range Arklow may operate within, and the connection used to observe and change it.
+Each target identifies one scalable resource, the replica counts Arklow may command, and the connection used to observe and change it.
 
-## Scale targets and autoscaling
+## Replica commands
 
-Many platforms already include an autoscaler. Arklow can work with that controller or request a replica count directly, depending on the target type.
+Arklow commands one replica count at a time. The target's configured minimum and maximum are permission bounds on those commands, not a range delegated to the provider.
 
-| Mode | Arklow changes | Capacity controller |
+| Mode | Arklow changes | Provider behavior |
 |---|---|---|
-| **Autoscaler floor** | The minimum and maximum replicas available to the provider autoscaler | The provider autoscaler chooses the live replica count within those bounds |
-| **Desired count** | A concrete replica count within the target's configured range | Arklow requests the live target size |
+| **Autoscaler** | Sets the provider's autoscaling bounds to the commanded count, with provider-specific scale-to-zero handling | The provider converges to that count through its autoscaler |
+| **Direct resize** | Requests the commanded replica count directly | The provider resizes the resource to that count |
 
 Admission control remains active while new capacity provisions. Work can wait during that interval and resume as the destination becomes ready.
 
@@ -50,7 +50,7 @@ One pool can have several scale targets when separate components contribute capa
 
 ## Write control
 
-While the scale-targets member of [Write Control](https://app.arklow.io/dashboard/settings?tab=organization) is off, adjustments are recorded and not written. While it is on, Arklow writes replica counts within the target's configured range.
+While the scale-targets member of [Write Control](https://app.arklow.io/dashboard/settings?tab=organization) is off, adjustments are recorded and not written. While it is on, Arklow writes replica counts within the target's permission bounds.
 
 
 ## Providers
@@ -61,21 +61,21 @@ While the scale-targets member of [Write Control](https://app.arklow.io/dashboar
     icon="server"
     href="/resources/scale-targets/baseten/index"
   >
-    Adjust the replica range for a model deployment.
+    Command the replica count for a model's production deployment.
   </Card>
   <Card
     title="Together AI"
     icon="microchip"
     href="/resources/scale-targets/together/index"
   >
-    Adjust the replica range for a dedicated endpoint.
+    Command the replica count for a dedicated endpoint.
   </Card>
   <Card
     title="Google Cloud"
     icon="google"
     href="/resources/scale-targets/gcp/index"
   >
-    Control a managed instance group through its autoscaler or target size.
+    Command a managed instance group through its autoscaler or target size.
   </Card>
   <Card
     title="HTTP scale API"
@@ -99,13 +99,13 @@ While the scale-targets member of [Write Control](https://app.arklow.io/dashboar
     Click **Sync now**, then open [**Scale Targets**](https://app.arklow.io/dashboard/scale-targets).
   </Step>
   <Step title="Choose the resource">
-    Select the deployment, endpoint, or managed instance group under **Provider inventory** and click **Attach**.
+    Select the model, endpoint, or managed instance group under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
     Choose the destinations this target serves, or an existing pool. Choosing destinations creates a new pool for the target, with those destinations as its members.
   </Step>
-  <Step title="Set the replica range">
-    Enter the minimum and maximum replica counts.
+  <Step title="Set permission bounds">
+    Enter the lowest and highest replica counts Arklow may command.
   </Step>
   <Step title="Bind a metric if needed">
     Select a metric query. Add a tag projection when the query covers several scalable resources.

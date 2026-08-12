@@ -6,7 +6,7 @@ hideFooterPagination: true
 
 A destination tells Arklow where work should go. A capacity pool tells Arklow what that destination depends on.
 
-Every destination belongs to a pool. A new destination begins in a standalone pool of its own. If several destinations draw from the same set of containers, GPU cluster, model deployment, or provider quota, you can place them in one shared pool.
+Every destination belongs to at least one pool. A new destination begins in a standalone pool of its own. If several destinations draw from the same set of containers, GPU cluster, model deployment, or provider quota, you can place them in one shared pool.
 
 ## Standalone and shared pools
 
@@ -22,7 +22,7 @@ A destination belongs to one pool for each resource its work draws from. Add it 
 
 ## Pool allocation
 
-Arklow continues to control each lane locally. A shared pool adds a second boundary across the destinations and lanes drawing from the same capacity.
+Arklow continues to control each lane locally. Each shared pool adds a boundary across the destinations and lanes drawing from its capacity. You do not configure a capacity number; Arklow derives available capacity for admission from delivery evidence and any connected infrastructure metrics.
 
 When the pool is steady, active work can use capacity that other lanes do not need. When the pool is constrained, Arklow can hold excess work from a noisy contributor while preserving room for other active lanes. Admission follows the tighter of the lane's local limit and its tightest current share across its pools.
 

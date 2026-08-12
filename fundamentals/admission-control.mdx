@@ -16,7 +16,7 @@ flowchart LR
     D --> O[Delivery outcomes]
     O --> G
     M[Infrastructure metrics] --> G
-    P[Capacity pool] --> G
+    P[Capacity pools] --> G
     C[Operator controls] --> G
 ```
 
@@ -30,7 +30,7 @@ flowchart LR
 | Destination behavior | Response time against its configured objective, acceptance, refusals, failures, and time to final settlement |
 | Rate feedback | Explicit requests to slow down and any guidance about when to try again |
 | [Infrastructure metrics](/resources/metrics/index) | Fresh measurements from the systems behind the destination |
-| [Shared capacity](/resources/capacity-pools/index) | The pool's current budget and the lane's allocation within it |
+| [Shared capacity](/resources/capacity-pools/index) | Available capacity derived from delivery evidence and connected infrastructure metrics, plus the lane's tightest allocation across its pools |
 | Operator controls | Temporary caps or a pause applied to the lane |
 
 ## Running and unsettled capacity

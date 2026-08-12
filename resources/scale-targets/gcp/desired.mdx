@@ -6,17 +6,17 @@ hideFooterPagination: true
 
 The **GCP managed instance group (manual)** target controls a group's target size directly. Use it for a managed instance group whose size is owned through resize operations.
 
-Arklow clamps each requested size to the target's minimum and maximum before sending the resize operation. Google Cloud may take time to create or remove instances, and Arklow continues observing the group while it converges.
+Arklow commands a replica count within the target's configured permission bounds, then sends the resize operation. Google Cloud may take time to create or remove instances, and Arklow continues observing the group while it converges.
 
 <Warning>
-  A Google Cloud autoscaler can overwrite direct resize operations. Use the [autoscaler floor target](/resources/scale-targets/gcp/autoscaler) for a group managed by an autoscaler.
+  A Google Cloud autoscaler can overwrite direct resize operations. Use the [autoscaler target](/resources/scale-targets/gcp/autoscaler) for a group managed by an autoscaler.
 </Warning>
 
 ## Configuration
 
 This mode uses the [shared group fields](/resources/scale-targets/gcp/index#shared-configuration). It has no autoscaler field.
 
-The target's **Minimum replicas** and **Maximum replicas** bound every requested group size.
+The target's **Minimum replicas** and **Maximum replicas** are permission bounds on every requested group size. This target supports a replica count of 0.
 
 ## Required permissions
 
@@ -42,10 +42,10 @@ You can place these permissions in a custom role scoped to the project containin
     Select the managed instance group under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
-    Choose the destination or shared pool served by the group.
+    Choose the destinations served by the group, or an existing pool. Choosing destinations creates a new pool with those destinations as its members.
   </Step>
-  <Step title="Set the replica range">
-    Enter the minimum and maximum group sizes Arklow may request.
+  <Step title="Set permission bounds">
+    Enter the lowest and highest replica counts Arklow may command.
   </Step>
   <Step title="Attach">
     Attach the target and confirm that the observed target size belongs to the expected group.

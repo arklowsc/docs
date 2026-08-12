@@ -75,6 +75,10 @@ This is useful for long running events that another part of your platform is han
 All that is required after `Deferring` is to periodically check in with Arklow using `Modack`. 
 
 <Note>
+For workloads that remain deferred for long periods, connect [infrastructure metrics](/resources/metrics/index). Arklow continues operating without them, but delayed settlement makes capacity decisions less precise.
+</Note>
+
+<Note>
 When using `Defer`, missing the `Modack` lease, or failing to continue doing so results in the work being marked done. For high throughput work, it's recommended that you don't rely upon the expiry of the `Modack` to signal `Ack`, as this can affect the view of the Admission Controller.
 </Note>
 

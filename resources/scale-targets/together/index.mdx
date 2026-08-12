@@ -4,7 +4,7 @@ description: ""
 hideFooterPagination: true
 ---
 
-The Together AI target adjusts the autoscaling range of one dedicated endpoint. Together AI continues choosing the live replica count within that range.
+The Together AI target commands the replica count of one dedicated endpoint through its autoscaling settings.
 
 ## Configuration
 
@@ -12,8 +12,8 @@ The Together AI target adjusts the autoscaling range of one dedicated endpoint. 
 |---|---|
 | **Endpoint ID** | The dedicated endpoint Arklow may observe and change. |
 | **Credential** | An [HTTP Auth Headers credential](/resources/credentials/http/auth-headers). |
-| **Minimum replicas** | The lowest autoscaling value Arklow may apply. |
-| **Maximum replicas** | The highest autoscaling value Arklow may apply. |
+| **Minimum replicas** | The lowest replica count Arklow may command. Together AI requires at least `1`. |
+| **Maximum replicas** | The highest replica count Arklow may command. |
 
 Use the endpoint ID shown in Together AI, such as `endpoint-abcd1234`.
 
@@ -27,9 +27,9 @@ Authorization: Bearer <api-key>
 
 ## Observations and changes
 
-Arklow reads the endpoint state and its configured autoscaling range. Together AI does not expose a live replica count through this connection, so **Observed replicas** remains empty and the target reports reduced observability.
+Arklow reads the endpoint state and configured autoscaling bounds. When the minimum and maximum match, Arklow treats that value as the exact configured count. If they differ, Arklow uses the minimum as a lower bound and keeps the target unsettled. The target therefore reports reduced observability.
 
-Scale changes update the endpoint's minimum and maximum replicas together. Arklow pauses changes while the endpoint is `STOPPED`; start the endpoint in Together AI to resume scaling.
+Arklow commands a count by setting the endpoint's minimum and maximum replicas to that value. Arklow pauses changes while the endpoint is `STOPPED`; start the endpoint in Together AI to resume scaling.
 
 ## Attach a Together AI target
 
@@ -44,10 +44,10 @@ Scale changes update the endpoint's minimum and maximum replicas together. Arklo
     Select the endpoint under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
-    Choose the destination or shared pool served by this endpoint.
+    Choose the destinations served by this endpoint, or an existing pool. Choosing destinations creates a new pool with those destinations as its members.
   </Step>
-  <Step title="Set the replica range">
-    Enter the minimum and maximum replica counts available to the Together AI autoscaler.
+  <Step title="Set permission bounds">
+    Enter the lowest and highest replica counts Arklow may command. The minimum must be at least `1`.
   </Step>
   <Step title="Attach">
     Attach the target and confirm that **Last observed** advances and **Health** shows no credential or endpoint error.

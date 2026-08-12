@@ -4,7 +4,9 @@ description: ""
 hideFooterPagination: true
 ---
 
-The **HTTP scale API (desired)** target requests a concrete replica count from your platform. Arklow clamps the request to the target's minimum and maximum.
+The **HTTP scale API (desired)** target requests a concrete replica count from your platform. Arklow clamps the request to the target's permission bounds.
+
+The target's minimum can be `0` when your platform supports scale-to-zero.
 
 This mode uses the shared [status endpoint and authentication contract](/resources/scale-targets/http/index).
 
@@ -43,10 +45,10 @@ The status endpoint should report `current_replicas` when available and use `set
     Choose the HTTP Auth Headers credential containing the headers your API expects.
   </Step>
   <Step title="Select capacity">
-    Choose the destination or shared pool served by this platform.
+    Choose the destinations served by this platform, or an existing pool. Choosing destinations creates a new pool with those destinations as its members.
   </Step>
-  <Step title="Set the replica range">
-    Enter the minimum and maximum replica counts Arklow may request.
+  <Step title="Set permission bounds">
+    Enter the lowest and highest replica counts Arklow may request. The minimum can be `0`.
   </Step>
   <Step title="Save">
     Create the target and confirm that its first status observation matches your platform.

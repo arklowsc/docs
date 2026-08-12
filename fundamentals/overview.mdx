@@ -91,7 +91,7 @@ A lane belongs to one destination. Orange Labs work routed to a second destinati
 
 The decision to release work comprises multiple different inputs. [**Admission control**](/fundamentals/admission-control) explains how these inputs affect release.
 
-Admission evaluates the selected lane, and the destination's [capacity pool](/resources/capacity-pools/index) if available, to know when to release work.
+Admission evaluates the selected lane and the destination's [capacity pools](/resources/capacity-pools/index). It applies the lane's tightest allocation across those pools.
 
 ### Waiting
 
@@ -117,7 +117,7 @@ Metric identity stays separate from lane identity. In this example, `customer_id
 
 The Orange Labs and Kite AI lanes both draw from the `inference-us` pool. A local lane limit controls one customer's work at one destination. The pool controls the aggregate supply used by every member lane and destination.
 
-When that supply is constrained, admission can hold a busy contributor while preserving room for other active lanes. [Capacity pools](/resources/capacity-pools/index) define membership, allocation, and budgets.
+When that supply is constrained, admission can hold a busy contributor while preserving room for other active lanes. [Capacity pools](/resources/capacity-pools/index) define membership, available capacity, and allocation.
 
 ### Scale targets
 
@@ -152,6 +152,6 @@ Admission continues holding excess work while capacity provisions. As the destin
     icon="boxes-stacked"
     href="/resources/capacity-pools/index"
   >
-    Shared supply, allocation, budgets, and attached scale targets.
+    Shared supply, allocation, and attached scale targets.
   </Card>
 </Columns>

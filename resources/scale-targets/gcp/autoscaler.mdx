@@ -1,16 +1,18 @@
 ---
-title: "GCP autoscaler floor"
+title: "GCP autoscaler"
 description: ""
 hideFooterPagination: true
 ---
 
-The **GCP managed instance group** target connects Arklow to an existing Google Cloud autoscaler. Arklow changes the permitted range, and the autoscaler chooses the group's live target size from its own signals.
+The **GCP managed instance group** target connects Arklow to an existing Google Cloud autoscaler. Arklow commands one replica count by setting the autoscaler's minimum and maximum to that count.
 
 ## Configuration
 
 Along with the [shared group fields](/resources/scale-targets/gcp/index#shared-configuration), enter the **Autoscaler** name attached to the managed instance group.
 
-The target's **Minimum replicas** and **Maximum replicas** are written to the autoscaler's `minNumReplicas` and `maxNumReplicas` settings.
+The target's **Minimum replicas** and **Maximum replicas** are permission bounds on Arklow's commands. For each command, Arklow writes the same count to the autoscaler's `minNumReplicas` and `maxNumReplicas` settings.
+
+This target supports replica counts of 1 or more. It cannot scale the group to zero.
 
 ## Required permissions
 
@@ -37,10 +39,10 @@ You can place these permissions in a custom role scoped to the project containin
     Select the managed instance group under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
-    Choose the destination or shared pool served by the group.
+    Choose the destinations served by the group, or an existing pool. Choosing destinations creates a new pool with those destinations as its members.
   </Step>
-  <Step title="Set the replica range">
-    Enter the minimum and maximum replicas available to the GCP autoscaler.
+  <Step title="Set permission bounds">
+    Enter the lowest and highest replica counts Arklow may command.
   </Step>
   <Step title="Attach">
     Attach the target and confirm that the observed target size belongs to the expected group.

@@ -8,11 +8,11 @@ An HTTP scale target lets Arklow observe and change a platform through an API yo
 
 <Columns cols={2}>
   <Card
-    title="Autoscaler floor"
+    title="Autoscaling"
     icon="arrows-up-down"
     href="/resources/scale-targets/http/floor"
   >
-    Update the range used by your platform's autoscaler.
+    Command a replica count through your platform's autoscaler.
   </Card>
   <Card
     title="Desired count"
@@ -44,16 +44,28 @@ Return `200` with a JSON object:
 ```json
 {
   "current_replicas": 3,
-  "settled": true
+  "desired_replicas": 3,
+  "min_replicas": 3,
+  "max_replicas": 3,
+  "settled": true,
+  "state": "running"
 }
 ```
 
 | Field | Type | Meaning |
 |---|---|---|
-| `current_replicas` | integer | The live replica count currently reported by the platform. |
+| `current_replicas` | integer | The live replica count. Arklow treats this as an exact observation. |
+| `desired_replicas` | integer | The replica count the platform is converging toward. |
+| `min_replicas` | integer | The minimum replica count configured on the platform. The value can be `0`. |
+| `max_replicas` | integer | The maximum replica count configured on the platform. |
 | `settled` | boolean | Whether the previous change has finished converging. Defaults to `true` when omitted. |
+| `state` | string | The platform state to record with the observation. |
 
-Both fields are optional. Return the values your platform can observe consistently. `settled: false` defers another write while the previous change converges.
+All fields are optional. Return the values your platform can observe consistently.
+
+Arklow uses `current_replicas` first as an exact observation. If it is absent, Arklow uses `desired_replicas` as a bound. If both are absent, Arklow uses `min_replicas` as a lower bound. Arklow always marks a bound observation unsettled, regardless of the `settled` field. Report `current_replicas` when your platform can observe convergence. A response with only `max_replicas` does not provide a replica observation.
+
+When no bound observation applies, `settled: false` defers another write while the previous change converges.
 
 ## Write responses
 

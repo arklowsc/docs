@@ -47,7 +47,7 @@ Tags can come from:
 
 ## Limits and advice
 
-Each lane carries the running and unsettled occupancy described in [Admission control](/fundamentals/admission-control#running-and-unsettled-capacity). Admission applies the lane's current limits and any tighter quota from its [capacity pool](/resources/capacity-pools/index).
+Each lane carries the running and unsettled occupancy described in [Admission control](/fundamentals/admission-control#running-and-unsettled-capacity). Admission applies the lane's current limits and its tightest allocation across [capacity pools](/resources/capacity-pools/index).
 
 Lane advice sets temporary running or unsettled caps. Advice can provide a lifetime in seconds or an explicit expiry; a lifetime defaults to 300 seconds. A cap holds for the shorter of its lifetime and five minutes from the write. A running cap of `0` pauses admission for the full lifetime, until the advice expires or is deleted.
 
@@ -78,7 +78,7 @@ Arklow can always raise this limit on request, and exists to prevent unbounded l
     icon="boxes-stacked"
     href="/resources/capacity-pools/index"
   >
-    Shared supply, allocation, and budgets across lanes.
+    Shared supply and allocation across lanes.
   </Card>
   <Card
     title="API reference"
