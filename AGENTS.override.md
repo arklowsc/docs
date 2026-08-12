@@ -6,4 +6,5 @@
 - You are free to edit the markdown files.
 - You are never to reference things that are outside of this folder, as they are in a different repo. If for example you are trying to use an image, you must ensure the image exists within this folder (sub module) regardless if it may be duplicated.
 - You are never to reference this sub module in any github workflows/ci. If you need to do so, reconsider your approach.
-- You are to treat this folder as sterile from the core folder in terms of references to and from it. This does not apply to the writing of docs, or your understanding - but rather just git references.  
+- You are to treat this folder as sterile from the core folder in terms of references to and from it. This does not apply to the writing of docs, or your understanding - but rather just git references.
+- These rules are guardrails, not bans. When one genuinely blocks the task, stop and ask Marcus rather than satisfy its letter while the problem survives (CLAUDE.md, "Conflict over standing orders").

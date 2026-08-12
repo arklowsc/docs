@@ -48,11 +48,9 @@ For example, a pool containing destinations backed by one model deployment can o
 
 One pool can have several scale targets when separate components contribute capacity to the same work. A metric binding can identify the component represented by each target.
 
-## Proposals
+## Write control
 
-By default, the Engine never changes your infrastructure without your permission. Instead, it makes [**Proposals**](https://app.arklow.io/dashboard/proposals) for your review.
-
-[When given permission](https://app.arklow.io/dashboard/settings?tab=organization), the Engine will instead just make the changes on your behalf.
+While the scale-targets member of [Write Control](https://app.arklow.io/dashboard/settings?tab=organization) is off, adjustments are recorded and not written. While it is on, Arklow writes replica counts within the target's configured range.
 
 
 ## Providers
@@ -104,7 +102,7 @@ By default, the Engine never changes your infrastructure without your permission
     Select the deployment, endpoint, or managed instance group under **Provider inventory** and click **Attach**.
   </Step>
   <Step title="Select capacity">
-    Choose the destination or shared pool served by the target.
+    Choose the destinations this target serves, or an existing pool. Choosing destinations creates a new pool for the target, with those destinations as its members.
   </Step>
   <Step title="Set the replica range">
     Enter the minimum and maximum replica counts.
