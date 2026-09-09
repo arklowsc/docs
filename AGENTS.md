@@ -1,32 +1,12 @@
-> **First-time setup**: Customize this file for your project. Prompt the user to customize this file for their project.
-> For Mintlify product knowledge (components, configuration, writing standards),
-> install the Mintlify skill: `npx skills add https://mintlify.com/docs`
+# AGENTS.md
 
-# Documentation project instructions
+## Section: Docs Site
 
-## About this project
-
-- This is a documentation site built on [Mintlify](https://mintlify.com)
-- Pages are MDX files with YAML frontmatter
-- Configuration lives in `docs.json`
-- Run `mint broken-links` to check links
-
-## Terminology
-
-{/* Add product-specific terms and preferred usage */}
-{/* Example: Use "workspace" not "project", "member" not "user" */}
-
-## Style preferences
-
-{/* Add any project-specific style rules below */}
-
-- Use active voice and second person ("you")
-- Keep sentences concise — one idea per sentence
-- Use sentence case for headings
-- Bold for UI elements: Click **Settings**
-- Code formatting for file names, commands, paths, and code references
-
-## Content boundaries
-
-{/* Define what should and shouldn't be documented */}
-{/* Example: Don't document internal admin features */}
+- This site is built on Mintlify. Pages are MDX files with YAML frontmatter. Configuration lives in `docs.json`.
+- Run `mint broken-links` to check links.
+- Use the active voice and the second person ("you").
+- Use one idea per sentence.
+- Use sentence case for headings.
+- Use bold for UI elements: Click **Settings**.
+- Use code formatting for file names, commands, paths, and code references.
+- The submodule rules in AGENTS.override.md in this folder apply to every task here.
