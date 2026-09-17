@@ -65,7 +65,7 @@ Use a range or an inline set with `in`. A range is inclusive. An inline set hold
 | `to_string(v)` | a scalar as a string |
 | `lookup_json_string(json, key, ...)` | a string from inside a JSON document |
 | `lookup_json_integer(json, key, ...)` | an integer from inside a JSON document |
-| `regex_replace(s, pattern, repl)` | the string with the first regex match replaced |
+| `regex_replace(s, pattern, repl)` | the string with the first regex match replaced (RE2 syntax, no backreferences or lookaround) |
 | `wildcard_replace(s, pattern, repl)` | the string with the first wildcard match replaced |
 | `url_decode(s)` | a URL-decoded string |
 | `encode_base64(v)` | the value as Base64 |

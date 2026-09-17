@@ -19,7 +19,7 @@ You can write an operator as a word or a symbol. Arklow stores the word form, so
 | `contains` | holds a substring | `payload.email contains "@acme.com"` |
 | `wildcard` | matches a wildcard pattern, ignoring case | `tags.channel wildcard "ops-*"` |
 | `strict wildcard` | matches a wildcard pattern, with case | `tags.channel strict wildcard "Ops-*"` |
-| `matches` `~` | matches a regular expression | `payload.sku matches "^SKU-[0-9]+$"` |
+| `matches` `~` | matches a regular expression (RE2 syntax, no backreferences or lookaround) | `payload.sku matches "^SKU-[0-9]+$"` |
 | `in` | is a member of a list or set | `payload.region in {"eu" "us"}` |
 
 ## Logical
