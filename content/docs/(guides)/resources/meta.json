@@ -1,0 +1,4 @@
+{
+  "title": "Resources",
+  "pages": ["actions", "sources", "destinations", "credentials", "lanes", "rules", "metrics", "capacity-pools", "scale-targets"]
+}

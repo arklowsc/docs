@@ -1,0 +1,42 @@
+---
+title: "Destinations"
+description: ""
+hideFooterPagination: true
+---
+
+A destination is where an action is handed off for processing. Link at least one destination to an action definition, then use a default or [rules](/resources/rules) to choose between several.
+
+The settlement boundary depends on the destination. Webhooks and SDK listeners can acknowledge work after processing it. Pub/Sub settles when Google Cloud accepts the publication; a separate subscriber's completion is outside that handoff.
+
+Every destination starts with its own [capacity pool](/resources/capacity-pools). Group destinations only when they draw from the same underlying worker fleet, deployment, quota, or other constrained resource.
+
+<Columns cols={2}>
+  <Card
+    title="Webhook"
+    icon="server"
+    href="/resources/destinations/http/webhook"
+  >
+    Deliver an HTTP request to an endpoint you run.
+  </Card>
+  <Card
+    title="Google Pub/Sub"
+    icon="google"
+    href="/resources/destinations/gcp/pubsub"
+  >
+    Publish work to a Pub/Sub topic.
+  </Card>
+  <Card
+    title="SDK listener"
+    icon="code"
+    href="/resources/destinations/sdk"
+  >
+    Let connected workers claim work when they have room.
+  </Card>
+  <Card
+    title="API reference"
+    icon="code"
+    href="/api-reference/destinations/list-destinations"
+  >
+    Create and manage destinations through the API.
+  </Card>
+</Columns>

@@ -1,0 +1,110 @@
+---
+title: "Rules"
+description: ""
+hideFooterPagination: true
+---
+
+A rule tests an action with an expression and applies an effect when the expression is true. Rules run before an action is dispatched.
+
+An expression reads the fields covered in [Expressions](/resources/rules/syntax/expressions): `payload`, `metadata`, `tags`, `variant`, `version`, `destination`, and `destinations`.
+
+## Evaluation
+
+A rule belongs to one action definition. Before that action dispatches, Arklow evaluates the definition's active rules in priority order, lowest number first. The first rule whose expression is true applies its effect, and evaluation stops.
+
+**Priority** controls the order. Give more specific rules a lower number.
+
+## Effects
+
+### Assign Tags
+
+Merges tags onto the action. Tags select the [lane](/resources/lanes) the action runs in.
+
+```
+payload.tier eq "gold"
+```
+
+Set **Effect** to **Assign Tags** and add a `priority` tag set to `high`.
+
+A tag value can also be read from action metadata. Use that when a source attribute or caller-supplied fact should become part of the action's routing or lane identity.
+
+### Mutate
+
+Changes the payload before it reaches the destination. A mutation can set a path to a JSON value, set it from a metadata path, or remove it.
+
+```
+payload.schema_version lt 2
+```
+
+Mutations are useful at an integration boundary: normalize a field for one flow without requiring the source or destination to understand the other side's shape.
+
+### Dispatch
+
+Routes the action to the linked destination whose tags match. Exactly one linked destination must match.
+
+```
+payload.region eq "eu"
+```
+
+Set **Effect** to **Dispatch** and add a `region` destination tag set to `eu`.
+
+### Skip
+
+Drops the action from this dispatch.
+
+```
+tags.env eq "test"
+```
+
+### Terminate
+
+Ends the action.
+
+```
+payload.amount le 0
+```
+
+## Add a rule
+
+Rules are managed on the action definition's **Flow** tab.
+
+<Steps>
+  <Step title="Open the action">
+    Open the action definition and select the **Flow** tab.
+  </Step>
+  <Step title="Open the rules">
+    Open **Dispatch Rules** from the rules node, then click **Add rule**.
+  </Step>
+  <Step title="Write the rule">
+    Enter a **Name** and an **Expression**, pick an **Effect**, and set a **Priority**.
+  </Step>
+  <Step title="Configure the effect">
+    For **Assign Tags**, fill **Tags to assign**. For **Dispatch**, fill **Destination tags to match**. For **Mutate**, add the payload operations in the order they should run.
+  </Step>
+  <Step title="Save">
+    Click **Create**.
+  </Step>
+</Steps>
+
+## Reference
+
+<Columns cols={2}>
+  <Card
+    title="Expressions"
+    icon="braces"
+    href="/resources/rules/syntax/expressions"
+  >
+  </Card>
+  <Card
+    title="Operators"
+    icon="binary"
+    href="/resources/rules/syntax/operators"
+  >
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/rules/list-rules"
+  >
+  </Card>
+</Columns>
