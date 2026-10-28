@@ -1,0 +1,16 @@
+allowBuilds:
+  esbuild: true
+  workerd: true
+
+blockExoticSubdeps: true
+
+dangerouslyAllowAllBuilds: false
+
+minimumReleaseAge: 1440
+
+patchedDependencies:
+  '@fumadocs/base-ui@16.17.8': patches/@fumadocs__base-ui@16.17.8.patch
+
+strictDepBuilds: true
+
+trustPolicy: no-downgrade
