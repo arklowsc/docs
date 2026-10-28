@@ -17,10 +17,10 @@ Pages are MDX files in `content/docs`. The `meta.json` file in each folder sets 
 
 ## Deploy
 
-A push to `main` builds the site and deploys it with `wrangler deploy`. The Worker has no `workers.dev` URL and no preview URLs, so `arklowdocs.io` is its only address.
+A push to `main` builds the site and deploys it with `wrangler deploy` to the route `docs.arklow.io/*`. The Worker has no `workers.dev` URL and no preview URLs, so `docs.arklow.io` is its only address.
 
 ## Boundaries
 
 This repo is consumed as a submodule, but stands alone: nothing in here references the consuming repo, and every asset lives in this folder.
 
-The actual end domain is hosted on https://arklowdocs.io, partly down to it being better practice to avoid domain-scoped cookies from being misused, and equally partly because Mintlify doesn't have a great history for Security. So it gets its own blast chamber... eh domain!
+The site is served at https://docs.arklow.io.
