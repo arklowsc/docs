@@ -4,13 +4,13 @@ description: ""
 hideFooterPagination: true
 ---
 
-A rule tests an action with an expression and applies an effect when the expression is true. Rules run before an action is dispatched.
+A rule tests a run with an expression and applies an effect when the expression is true. Rules apply before a run is dispatched.
 
 An expression reads the fields covered in [Expressions](/resources/rules/syntax/expressions): `payload`, `metadata`, `tags`, `variant`, `version`, `destination`, and `destinations`.
 
 ## Evaluation
 
-A rule belongs to one action definition. Before that action dispatches, Arklow evaluates the definition's active rules in priority order, lowest number first.
+A rule belongs to one action. Before a run of that action dispatches, Arklow evaluates the action's active rules in priority order, lowest number first.
 
 Every **Mutate** rule whose expression is true applies, in priority order. For all other effects, the first rule whose expression is true applies its effect, and evaluation stops.
 
@@ -20,9 +20,9 @@ Every **Mutate** rule whose expression is true applies, in priority order. For a
 
 ### Assign Tags
 
-Merges tags onto the action. Tags select the [lane](/resources/lanes/index) the action runs in.
+Merges tags onto the run. Tags select the [lane](/resources/lanes/index) of the run.
 
-If the action already has a tag with the same key, the action keeps its own value.
+If the run already has a tag with the same key, the run keeps its own value.
 
 ```
 payload.tier eq "gold"
@@ -30,7 +30,7 @@ payload.tier eq "gold"
 
 Set **Effect** to **Assign tags** and add a `priority` tag set to `high`.
 
-Each tag takes its value from **Value** (fixed text), **Metadata** (a path in the action's metadata), or **Payload** (a path in the payload).
+Each tag takes its value from **Value** (fixed text), **Metadata** (a path in the run's metadata), or **Payload** (a path in the payload).
 
 ### Mutate
 
@@ -44,7 +44,7 @@ Mutations are useful at an integration boundary: normalize a field for one flow 
 
 ### Dispatch
 
-Routes the action to the linked destination whose tags match. Exactly one linked destination must match.
+Routes the run to the linked destination whose tags match. Exactly one linked destination must match.
 
 ```
 payload.region eq "eu"
@@ -54,7 +54,7 @@ Set **Effect** to **Dispatch** and add a `region` destination tag set to `eu`.
 
 ### Skip
 
-Ends the action as canceled, with no delivery.
+Ends the run as canceled, with no delivery.
 
 ```
 tags.env eq "test"
@@ -62,7 +62,7 @@ tags.env eq "test"
 
 ### Terminate
 
-Ends the action as failed, with no delivery.
+Ends the run as failed, with no delivery.
 
 ```
 payload.amount le 0
@@ -70,11 +70,11 @@ payload.amount le 0
 
 ## Add a rule
 
-Rules are managed on the action definition's **Flow** tab.
+Rules are managed on the action's **Flow** tab.
 
 <Steps>
   <Step title="Open the action">
-    Open the action definition and select the **Flow** tab.
+    Open the action and select the **Flow** tab.
   </Step>
   <Step title="Open the rules">
     Open **Dispatch Rules** from the rules node, then click **Add rule**.

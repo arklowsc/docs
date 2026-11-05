@@ -13,7 +13,7 @@ Arklow splits the work going to a destination into lanes. When each user has the
 | **Complete tags** | The complete normalized tag map | The default when every tag combination should have independent control |
 | **Partition tag** | One configured tag name and value | Stable customer, tenant, account, region, or workload scopes |
 
-Tag order has no effect on identity. An action with no tags uses the destination's untagged lane.
+Tag order has no effect on identity. A run with no tags uses the destination's untagged lane.
 
 ## Set a partition tag
 
@@ -23,13 +23,13 @@ When the partition tag holds your user identifier, each user has their own lane.
 
 ### Missing values
 
-Actions with a missing or empty partition value use the destination's shared untagged lane regardless of the other tags.
+Runs with a missing or empty partition value use the destination's shared untagged lane regardless of the other tags.
 
-Choose a partition tag that is present on every action that requires isolation.
+Choose a partition tag that is present on every run that requires isolation.
 
 ### Other tags
 
-Tags outside the partition remain attached to the action and available to rules, metrics, and observability. The partition value alone determines the lane and its limits.
+Tags outside the partition remain attached to the run and available to rules, metrics, and observability. The partition value alone determines the lane and its limits.
 
 ## Tag sources
 
@@ -44,7 +44,7 @@ Tags can come from:
 
 A destination can hold at most **50,000 lanes**. Ingress will accept the work, but raise the error `TAG_CARDINALITY_EXCEEDED`. New tags won't be recorded, and will default to the default destination.
 
-Request identifiers, timestamps, and other unbounded values should stay outside lane identity. A partition tag can keep descriptive tags on the action while bounding lane identity to the selected values.
+Request identifiers, timestamps, and other unbounded values should stay outside lane identity. A partition tag can keep descriptive tags on the run while bounding lane identity to the selected values.
 
 Arklow can always raise this limit on request, and exists to prevent unbounded lane generation.
 

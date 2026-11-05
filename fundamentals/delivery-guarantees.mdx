@@ -7,9 +7,9 @@ description: ""
 
 Arklow uses at-least-once delivery. The same action can reach a destination more than once when an acknowledgement is lost, a lease expires, or a retry is requested.
 
-Each delivery is an attempt. Attempts begin at `0` and increase when Arklow redelivers the action. The action ID remains the same across attempts.
+Each delivery is an attempt. Attempts begin at `0` and increase when Arklow redelivers the run. The run identifier remains the same across attempts.
 
-Build consumers to handle repeated delivery safely. Where the work has an external side effect, use the action ID or a stable business identifier as an idempotency key. The attempt number identifies only one delivery of that work; use action-level identity for idempotency.
+Build consumers to handle repeated delivery safely. Where the work has an external side effect, use the run identifier or a stable business identifier as an idempotency key. The attempt number identifies only one delivery of that work; use action-level identity for idempotency.
 
 ## Settlement Verbs
 
@@ -17,8 +17,8 @@ The destination can respond to incoming work in four ways:
 
 | Signal | Result |
 |---|---|
-| Ack | The action succeeds |
-| Nack | The action is retried, or fails when the rejection is permanent |
+| Ack | The run succeeds |
+| Nack | The run is retried, or fails when the rejection is permanent |
 | Modack | The current attempt receives more time to settle |
 | [Defer](/fundamentals/acknowledgement-and-deferral#pattern-b-work-is-performed-asynchronously) | The current attempt will be authoritative, and no more redeliveries will be made. |
 
@@ -27,5 +27,5 @@ The destination can respond to incoming work in four ways:
 Some sources, like those that resemble a Queue, identify work with their provider's message ID. If for example GCP Pub/Sub or AWS SQS redeliver the same source message after acceptance, the redelivery resolves to the original action.
 
 <Note>
-[HTTP ingress](/resources/sources/arklow/ingress) has no equivalent deduplication. Every accepted POST creates a new action, even when two requests carry identical payloads. 
+[HTTP ingress](/resources/sources/arklow/ingress) has no equivalent deduplication. Every accepted POST creates a new run, even when two requests carry identical payloads. 
 </Note>

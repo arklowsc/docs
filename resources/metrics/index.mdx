@@ -35,7 +35,7 @@ If you're using `Discover`, as detailed below - excluding tags that have high ca
 
 ## Action policies
 
-Open an action definition's **Metrics** tab and add a policy for a source query.
+Open an action's **Metrics** tab and add a policy for a source query.
 
 Arklow offers two unique modes for identifying relationships with your metrics. 
 
@@ -60,7 +60,7 @@ Arklow offers two unique modes for identifying relationships with your metrics.
   <Tab title="Discover">
     Arklow considers the series returned by the query and looks for the ones that consistently describe the action's work.
 
-    The tags on your work tell Arklow which dimensions matter. A series sharing `model_id=M1` with your work is evaluated against exactly that slice of the work; a series with no shared tags is evaluated against the action as a whole.
+    The tags on your runs tell Arklow which dimensions matter. A series sharing `model_id=M1` with your runs is evaluated against exactly that slice of the work; a series with no shared tags is evaluated against the action as a whole.
 
     Use tag bindings when the work and metric use different names for the same dimension. A binding from action tag `customer` to series tag `customer_id` lets their values be compared without renaming either system.
   </Tab>

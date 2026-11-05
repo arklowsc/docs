@@ -28,7 +28,7 @@ In other words, the same block of code/service that receives the work, is also p
       },
     );
     ```
-    While the handler is open, the client renews the claim's lease automatically, up to the action timeout. `extend()` sends an explicit `Modack` when you want the deadline moved by a known amount:
+    While the handler is open, the client renews the claim's lease automatically, up to the run timeout. `extend()` sends an explicit `Modack` when you want the deadline moved by a known amount:
 
     ```typescript
     await delivery.extend(120_000);
@@ -53,7 +53,7 @@ In other words, the same block of code/service that receives the work, is also p
     x-arklow-signaling-val: 120
     ```
 
-    The action holds unsettled for the value in seconds.
+    The run stays unsettled for the value in seconds.
 
     An endpoint that returns without sending acks, whether due to an error or timeout, will trigger a redelivery.
   </Tab>
@@ -68,7 +68,7 @@ Arklow allows you to tell it to `Defer` work. Deferring work tells Arklow:
 * Arklow is no longer responsible for redeliveries.
 * If I stop sending heartbeats, consider it done.
 
-This is useful for long running events that another part of your platform is handling, or would be impractical to handle in the same place as your listener. 
+This is useful for long running work that another part of your platform is handling, or would be impractical to handle in the same place as your listener. 
 
 All that is required after `Deferring` is to periodically check in with Arklow using `Modack`. You can use the existing [HTTP API](/api-reference/ingress/post-v1modack), or the Client SDK to perform `Modack`.
 
@@ -111,12 +111,12 @@ When using `Defer`, missing the `Modack` lease, or failing to continue doing so 
 
 ### After the defer
 
-Any process holding the identifiers settles the action through the ingress API:
+Any process holding the identifiers settles the run through the ingress API:
 
 | Call | Effect |
 |---|---|
-| [POST /v1/modack](/api-reference/ingress/post-v1modack) | Extends the record's deadline by `mod_ack` seconds while the work continues |
-| [POST /v1/ack](/api-reference/ingress/post-v1ack) | Marks the action as succeeded |
+| [POST /v1/modack](/api-reference/ingress/post-v1modack) | Extends the run's deadline by `mod_ack` seconds while the work continues |
+| [POST /v1/ack](/api-reference/ingress/post-v1ack) | Marks the run as succeeded |
 
 ```bash
 curl -X POST https://ingress.arklow.io/v1/ack \

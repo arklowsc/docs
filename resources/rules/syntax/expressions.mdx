@@ -4,7 +4,7 @@ description: ""
 hideFooterPagination: true
 ---
 
-An expression is the condition on a rule. It reads fields from the action and returns true or false.
+An expression is the condition on a rule. It reads fields from the run and returns true or false.
 
 ## Fields
 
@@ -12,9 +12,9 @@ These fields are available during Destination/Lane Selection.
 
 | Field | Type | Reads |
 |---|---|---|
-| `payload` | object | the action payload |
-| `metadata` | object | the action metadata |
-| `tags` | map | the action's tags |
+| `payload` | object | the run payload |
+| `metadata` | object | the run metadata |
+| `tags` | map | the run's tags |
 | `variant` | string | the action variant |
 | `version` | integer | the action version |
 | `destination` | object | the selected destination, with `label`, `type`, and `tags` |

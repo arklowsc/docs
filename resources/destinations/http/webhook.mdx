@@ -19,9 +19,9 @@ Arklow sends this request to your endpoint:
 * **Headers**:
   * All headers configured on the destination, plus the credential's headers.
   * `Content-Type`: `application/json`
-  * `x-arklow-actionid`: the id of the action being delivered.
+  * `x-arklow-actionid`: the identifier of the run being delivered.
   * `x-arklow-attempt`: the attempt number, starting at `0`.
-* **Body**: the action's payload, as JSON.
+* **Body**: the run's payload, as JSON.
 
 ## Response
 
@@ -57,16 +57,16 @@ When both are present, the headers take precedence.
 
 | Signal | Effect |
 |---|---|
-| `ack` | The action succeeds. |
+| `ack` | The run succeeds. |
 | `nack` | The attempt fails and is redelivered. A value in seconds schedules the redelivery. |
-| `mod_ack` | Holds the action in `ack_wait` for the value in seconds, or 60 without one. |
+| `mod_ack` | Holds the run in `ack_wait` for the value in seconds, or 60 without one. |
 
 ### Unsignaled responses
 
 A `2xx` response with no signal follows the destination's signaling config:
 
-* With `{"enabled": true, "default": "ack"}`, the action succeeds immediately.
-* Otherwise, the action waits in `ack_wait` for 60 seconds. An attempt that passes its deadline unsettled is redelivered under the next attempt number.
+* With `{"enabled": true, "default": "ack"}`, the run succeeds immediately.
+* Otherwise, the run waits in `ack_wait` for 60 seconds. An attempt that passes its deadline unsettled is redelivered under the next attempt number.
 
 ## Add a webhook to Arklow
 
