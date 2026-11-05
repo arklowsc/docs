@@ -11,18 +11,6 @@ hideFooterPagination: true
 | **[Listener Delivery](#listener-delivery)** | You want your code to receive work from Arklow directly.
 | **[External Work](#external-work)** | An existing pipeline starts and executes the work.
 
-## Performance
-
-The expected delivery latency from work entering Arklow to reaching your listener(s) is between `150-300ms`. 
-
-Each lane can drive approximately `24` messages per second, or `1440` messages per minute. To increase throughput, use more [lanes](/resources/lanes).
-
-There isn't a maximum per-second limit. The maximum lanes that can be used by default, [are detailed here](/resources/lanes#cardinality).
-
-<Note>
-Lanes with zero outstanding work for some time can take up to 4 seconds to calibrate, and deliver work. Once calibrated, delivery latency has no added delay.
-</Note>
-
 ## Authentication
 
 Listener delivery and external registration authenticate with an Arklow organization API key.
@@ -31,39 +19,16 @@ Listener delivery and external registration authenticate with an Arklow organiza
 
 ### Setup
 
-<Steps>
-  <Step title="Open the destinations page">
-    Go to [**Destinations**](https://app.arklow.io/dashboard/destinations) and click **Create destination**.
-  </Step>
-  <Step title="Pick the type">
-    Set **Destination Type** to **SDK**.
-  </Step>
-  <Step title="Choose a namespace">
-    Enter the namespace your listeners will use.
-  </Step>
-  <Step title="Link the destination">
-    Create the destination, then link it from the action's **Flow** tab.
-  </Step>
-</Steps>
+See the [Quickstart](/quickstart).
 
 ### Listener options
 
 | Option | Behavior |
 |---|---|
 | `namespace` | Claims work from every active SDK destination in the organization with the same namespace |
-| `maxOutstanding` | (Optional) Sets the maximum number of unsettled deliveries this listener can hold |
+| `maxOutstanding` | (Optional) Sets the maximum number of unsettled deliveries this listener can hold; defaults to `1024` |
 | `variants` | Limits claims to the named action variants; an omitted or empty list accepts every variant |
 | `transport` | Uses `grpc` by default; use `poll` to claim over HTTPS |
-
-<Note>
-When using the optional field `maxOutstanding`, there are some important things to note.
-
-- It's important to use `.defer()` if the work will be asynchronous, or not handled by the code that takes delivery of the work. This frees up slots for further delivery.
-- Setting the value too low can impact Arklow's delivery choices. We recommend keeping it default unless you run into memory constraints.
-
-It is **not recommended** to only use a single listener.
-
-</Note>
 
 ### Start the listener
 
@@ -86,29 +51,30 @@ const running = listener.listen(
 
 | Field | Value |
 |---|---|
-| `actionRecordId` | Stable action identity across attempts |
+| `actionRecordId` | Stable run identifier across attempts |
 | `attempt` | Delivery attempt number |
-| `variant` | Action definition variant |
-| `payload` | Action payload |
-| `tags` | Tags attached to the action, when present |
-| `leaseDeadlineAt` | Current claim deadline |
-| `timeoutAt` | Action timeout, when one applies |
+| `variant` | Action variant |
+| `payload` | Run payload |
+| `tags` | Tags attached to the run, when present |
+| `leaseRemainingMs` | Milliseconds left on the current lease |
+| `timeoutRemainingMs` | Milliseconds left before the run timeout, when one applies |
 
 ## Settlement
 
 | Method | Effect |
 |---|---|
-| `await delivery.ack()` | Marks the action as succeeded |
+| `await delivery.ack()` | Marks the run as succeeded |
 | `await delivery.nack()` | Rejects the attempt and allows redelivery |
-| `await delivery.nack({ retryAt })` | Schedules the next attempt for the supplied `Date` |
+| `await delivery.nack({ retryAfterSeconds })` | Schedules the next attempt after the supplied number of seconds, a positive integer |
 | `await delivery.nack({ retry: false })` | Marks the failure as permanent |
-| `await delivery.extend(ms)` | Extends the current lease within the action timeout |
+| `await delivery.defer()` | Stops redelivery and releases the listener slot while another process completes the work. See [Pattern B](/fundamentals/acknowledgement-and-deferral#pattern-b-work-is-performed-asynchronously). |
+| `await delivery.extend(ms)` | Extends the current lease within the run timeout |
 
-The first explicit acknowledgement or rejection takes precedence over the handler result.
+A handler that returns acks the delivery, and a handler that throws nacks it. The first explicit acknowledgement or rejection takes precedence over the handler result.
 
-### Leases
+After `defer()`, the handler result has no effect, and `nack()` throws an error.
 
-A claim begins with a 60-second lease, shortened when the action timeout is nearer. The client renews the lease while the handler remains open. An expired claim can be delivered again, unless `.defer()` is called.
+Until you settle or defer a delivery, the listener renews its lease up to the run timeout. Call `extend()` to move the deadline by a known amount.
 
 Use `actionRecordId` as the idempotency key across attempts. [Delivery guarantees](/fundamentals/delivery-guarantees) talks about delivery behavior that can be important.
 
@@ -118,7 +84,7 @@ Call `await running.stop()` during shutdown. The listener stops claiming work an
 
 ## External Work
 
-Call `registerExternalWork` after an existing pipeline starts work that Arklow should track. Registration creates an action record and bypasses admission because execution has already begun. After rules select its destination and lane, the work contributes to that lane's external running count until completion or expiry.
+Call `registerExternalWork` after an existing pipeline starts work that Arklow should track. Registration creates a run.
 
 ```typescript
 // Other SDK languages follow the same form.
@@ -134,28 +100,29 @@ const actionRecordId = await work.recordId;
 
 | Option | Behavior |
 |---|---|
-| `variant` | Selects the action definition for the record |
+| `variant` | Selects the action for the run |
 | `externalRef` | Uses an existing job identifier as an idempotency key |
 | `tags` | Attaches work identity and routing context |
-| `destinationId` | (Optional) Associates the record with a destination linked to the definition |
-| `payload` | Stores the action payload |
+| `destinationId` | (Optional) Associates the run with a destination linked to the action |
+| `payload` | Stores the run payload |
 | `timeout` | Sets the maximum lifetime in seconds; defaults to `3600` and accepts `1` through `86400` |
 
-When `destinationId` is omitted, the action's normal rule and default-destination selection apply. Reusing an `externalRef` returns the existing action record. Supply a stable reference when registration may be retried; otherwise the client generates one.
+When `destinationId` is omitted, the action's normal rule and default-destination selection apply. Reusing an `externalRef` returns the existing run. Supply a stable reference when registration may be retried; otherwise the client generates one.
 
 ### External work handle
 
 | Member | Behavior |
 |---|---|
-| `recordId` | Resolves to the Arklow action ID |
+| `externalRef` | The reference of this work, including one that the client generated |
+| `recordId` | Resolves to the Arklow run identifier |
 | `update()` | Extends the activity lease while the external work remains active |
-| `complete()` | Marks the action as succeeded |
+| `complete()` | Marks the run as succeeded |
 | `toJSON()` | Serializes the identifiers needed to resume tracking in another process |
 
-Registration starts a 60-second activity lease. Call `update()` on a cadence shorter than 60 seconds while the work remains active. The client coalesces calls made before another extension is needed, and the lease cannot move beyond the action timeout. This is currently 24 hours.
+Registration starts a 60-second activity lease. Call `update()` on a cadence shorter than 60 seconds while the work remains active. The client coalesces calls made before another extension is needed, and the lease cannot move beyond the run timeout.
 
 Await `recordId` before calling `toJSON()`. Restore the serialized handle after a process handoff or restart with `externalWorkHandle()`.
 
 <Warning>
-  External work has no rejection or retry settlement. When a lease expires, it also marks the action as complete.
+  External work has no rejection or retry settlement. When a lease expires, it also marks the run as complete.
 </Warning>

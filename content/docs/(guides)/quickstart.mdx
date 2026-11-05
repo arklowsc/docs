@@ -3,19 +3,29 @@ title: "Quickstart"
 description: ""
 ---
 
-You'll need an API key from [**Settings**](https://app.arklow.io/dashboard/settings?tab=keys).
 <Steps>
-  <Step title="Create an Action">
-    Actions define the work your platform performs. Create one on the [**New Action**](https://app.arklow.io/dashboard/actions/new) page with the variant `orders.created`.
+  <Step title="Install the SDK">
+    <Tabs>
+      <Tab title="TypeScript">
+        ```bash
+        npm install @arklow/sdk-ts
+        ```
+      </Tab>
+      <Tab title="Python">
+        ```bash
+        pip install arklow-sdk-py
+        ```
+      </Tab>
+    </Tabs>
   </Step>
-  <Step title="Add an SDK destination">
-    Create an [SDK destination](/resources/destinations/sdk) on the [**Destinations**](https://app.arklow.io/dashboard/destinations) page: set **Destination Type** to **SDK** and enter the namespace `quickstart`. [Other destination types](/resources/destinations) deliver over HTTP or to Pub/Sub.
+  <Step title="Create an action">
+    Create one on the [**New action**](https://app.arklow.io/dashboard/actions/new) page.
   </Step>
-  <Step title="Link them">
-    Open the action's **Flow** tab and use **Link destination** to attach the newly created SDK Destination.
+  <Step title="Link an SDK destination">
+    Add it on the action's **Flow** tab, with the namespace `quickstart`.
   </Step>
   <Step title="Start a listener">
-    The listener claims deliveries for its namespace and hands each one to your handler.
+    Create an [API key](https://app.arklow.io/dashboard/settings?tab=keys).
 
     <Tabs>
       <Tab title="TypeScript">
@@ -34,8 +44,6 @@ You'll need an API key from [**Settings**](https://app.arklow.io/dashboard/setti
         ```
       </Tab>
       <Tab title="Python">
-        The package `arklow-sdk-py` imports as `arklow`.
-
         ```python
         import asyncio
         import os
@@ -58,23 +66,12 @@ You'll need an API key from [**Settings**](https://app.arklow.io/dashboard/setti
         ```
       </Tab>
     </Tabs>
-
-    `ack()` settles the action as succeeded. A handler that returns without settling acks; an unhandled error nacks, and the attempt is redelivered.
   </Step>
-  <Step title="Send work">
-    One POST to [ingress](/resources/sources/arklow/ingress) creates the action.
-
-    ```bash
-    curl -X POST https://ingress.arklow.io/v1/ingress/orders.created \
-      -H "X-Arklow-Auth: $ARKLOW_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{"order_id": "8471", "total": 129.50}'
-    ```
-
-    [SQS](/resources/sources/aws/sqs) and [Pub/Sub](/resources/sources/gcp/pubsub) sources ingest into the same action from queues you already run.
+  <Step title="Connect your source">
+    Add your [source](/resources/sources) on the action's **Flow** tab.
   </Step>
-  <Step title="Acknowledge the Action">
-    When your handler finishes its work, it automatically acknowledges. If the work should be handled asynchronously, see [Deferring work](/fundamentals/acknowledgement-and-deferral).
+  <Step title="Send Work">
+    Arklow will now fetch work from your chosen Source, and send it to the Destination you've selected.  
   </Step>
 </Steps>
 
@@ -84,7 +81,7 @@ You'll need an API key from [**Settings**](https://app.arklow.io/dashboard/setti
   <Card title="SDK" icon="code" href="/resources/destinations/sdk">
     Listener options, settlement, leases, and external work.
   </Card>
-  <Card title="How Arklow works" icon="puzzle" href="/fundamentals/overview">
-    The path work takes from source to settlement.
+  <Card title="Isolate users" icon="users" href="/fundamentals/isolation">
+    Let Arklow know how to distinguish your users.
   </Card>
 </CardGroup>

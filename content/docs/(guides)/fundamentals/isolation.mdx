@@ -1,0 +1,24 @@
+---
+title: "Isolate users"
+description: ""
+---
+
+Allowing Arklow to distinguish one user from another, involves teaching Arklow which fields you identify your user with today. You can use different ways to identify users for different destinations, or use the same for each.
+
+When you've given Arklow the ability to do this, Arklow can then start learning from your user's impact on your product and make scheduling decisions in real time that protects it.
+
+<Steps>
+  <Step title="Choose the user identifier">
+    On the action's **Flow** tab, set the destination's **Partition tag key** to the tag that holds your user identifier. If the identifier is only in the payload, add an [Assign tags rule](/resources/rules#assign-tags) to parse it as a partition key.
+  </Step>
+  <Step title="Confirm Arklow sees the identifier">
+    Observe that work flowing through Arklow, available on the action's **Runs** tab, is being marked with your chosen identifier.
+  </Step>
+  <Step title="Turn on admission control">
+    In [**Settings**](https://app.arklow.io/dashboard/settings?tab=organization), turn on **Admission control** under **Write control**.
+  </Step>
+</Steps>
+
+<Note>
+When using Sources that contain metadata like Google Cloud's `PubSub` or AWS' `SQS`, Arklow will automatically make these available as tags that you can simply reuse for your Partition tag key.
+</Note>

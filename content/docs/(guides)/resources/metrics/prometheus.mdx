@@ -68,7 +68,7 @@ A query begins informing an action after you attach it with a metric policy.
 
 <Steps>
   <Step title="Open the action">
-    Open the action definition and select its **Metrics** tab.
+    Open the action and select its **Metrics** tab.
   </Step>
   <Step title="Attach metrics">
     Click **Attach Metrics**, or **Add Policy** when the action already has a policy. Select the Prometheus source and query.
@@ -77,7 +77,7 @@ A query begins informing an action after you attach it with a metric policy.
     Use **Discover** to consider the query's returned series. Use **Manual** to limit consideration to series matching the selector you provide.
   </Step>
   <Step title="Align tag names">
-    In **Discover** mode, add **Tag Bindings** when an action tag and Prometheus label carry the same identity under different names, such as `customer` and `customer_id`. Manual policies use the metric-side selector instead.
+    In **Discover** mode, add **Tag Bindings** when a run tag and Prometheus label carry the same identity under different names, such as `customer` and `customer_id`. Manual policies use the metric-side selector instead.
   </Step>
   <Step title="Create the policy">
     Set **Max Series** to a deliberate bound, then click **Create Policy**.

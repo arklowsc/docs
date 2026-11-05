@@ -17,8 +17,6 @@ Many platforms already include an autoscaler. Arklow can work with that controll
 | **Autoscaler floor** | The minimum and maximum replicas available to the provider autoscaler | The provider autoscaler chooses the live replica count within those bounds |
 | **Desired count** | A concrete replica count within the target's configured range | Arklow requests the live target size |
 
-Admission control remains active while new capacity provisions. Work can wait during that interval and resume as the destination becomes ready.
-
 ## Metric binding
 
 A pool holds one scale target per resource that serves its work. The binding tells each target which measurements are about its resource: a query from one of your [metric sources](/resources/metrics), and the tag value that identifies the resource in what the query returns.
@@ -28,17 +26,6 @@ target: model-a   query: company.perf.models   matches: model_id=M1
 target: model-b   query: company.perf.models   matches: model_id=M2
 target: model-c   query: company.perf.models   matches: model_id=M3
 ```
-
-Let's follow one action from arrival to the target that serves it:
-
-1. An action tagged `{customer_id=C1, model_id=M1}` routes to a destination in this pool.
-2. Its [metric policy](/resources/metrics) matches those tags to series tags by name, selecting `request_latency{customer_id=C1, model_id=M1}`.
-3. The target matching `model_id=M1` watches that series.
-4. When the work pushes that series into pressure, reflecting the actual part of that infrastructure, `model_id=M1` grows.
-
-The `model_id` on the action reached the target through the series: the policy carried the value across on the shared name, and the target matched it. The `customer_id` traveled the same way but does a different job; it says whose work the series describes.
-
-One resource serves many customers. Two actions, `{customer_id=C1, model_id=M2}` and `{customer_id=C2, model_id=M2}`, produce two series: `request_latency{customer_id=C1, model_id=M2}` and `request_latency{customer_id=C2, model_id=M2}`. Both carry `model_id=M2`, so both belong to target model-b, and pressure on either one grows it. A customer with a private resource has a different `model_id` on their series, and with it their own target.
 
 ## Pool ownership
 

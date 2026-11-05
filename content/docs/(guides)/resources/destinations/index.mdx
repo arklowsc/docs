@@ -4,11 +4,7 @@ description: ""
 hideFooterPagination: true
 ---
 
-A destination is where an action is handed off for processing. Link at least one destination to an action definition, then use a default or [rules](/resources/rules) to choose between several.
-
-The settlement boundary depends on the destination. Webhooks and SDK listeners can acknowledge work after processing it. Pub/Sub settles when Google Cloud accepts the publication; a separate subscriber's completion is outside that handoff.
-
-Every destination starts with its own [capacity pool](/resources/capacity-pools). Group destinations only when they draw from the same underlying worker fleet, deployment, quota, or other constrained resource.
+A destination is where a run is handed off for processing. Link at least one destination to an action, then use a default or [rules](/resources/rules) to choose between several.
 
 <Columns cols={2}>
   <Card
