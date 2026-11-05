@@ -33,6 +33,10 @@ Uses a [GCP Service Account credential](/resources/credentials/gcp/service-accou
   </Step>
 </Steps>
 
+## Attributes in rules
+
+A rule reads an attribute at the metadata path `attributes.<name>`.
+
 ## Deduplication
 
 Actions are keyed to the source message, so a Pub/Sub redelivery resolves to the original action.

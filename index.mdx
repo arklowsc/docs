@@ -3,27 +3,6 @@ title: "Arklow Documentation"
 description: ""
 ---
 
-Arklow's goal is to find your infrastructure's ideal supply and demand curve.
-
-Work arrives from your services and queues. Arklow accepts it durably, routes it, and holds excess demand until the destination can absorb it. During a downstream slowdown, excess work remains in Arklow and is released as capacity recovers.
-
-
-```mermaid actions={false}
-flowchart LR
-    S["Sources"] --> A["Actions"]
-    A --> R["Rules"]
-    R --> G["Admission"]
-    G --> D["Destinations"]
-    D --> O["Outcomes"]
-    O --> G
-```
-
-<br />
-
-<Note>
-  Arklow can also track work that happens externally. Use the [SDK](/resources/destinations/sdk/index) when attaching existing pipelines to Arklow is impractical.
-</Note>
-
 <Columns cols={2}>
   <Card
     title="Quickstart"
@@ -31,13 +10,6 @@ flowchart LR
     href="/quickstart"
   >
     Send an action through Arklow and settle its first delivery.
-  </Card>
-  <Card
-    title="How Arklow works"
-    icon="puzzle-piece"
-    href="/fundamentals/overview"
-  >
-    One action across lanes, admission, shared capacity, and settlement.
   </Card>
 </Columns>
 
@@ -77,13 +49,6 @@ flowchart LR
 ## Capacity management
 
 <Columns cols={2}>
-  <Card
-    title="Admission control"
-    icon="gauge"
-    href="/fundamentals/admission-control"
-  >
-    Waiting, running and unsettled limits, pacing, and caps.
-  </Card>
   <Card
     title="Metrics"
     icon="chart-line"

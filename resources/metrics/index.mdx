@@ -4,8 +4,6 @@ description: ""
 hideFooterPagination: true
 ---
 
-Arklow learns from delivery before you connect any metrics. It can see how long attempts remain running or unsettled, whether a destination accepts them, and when it begins to push back.
-
 Metrics add the view from inside your systems. They can show pressure in a container, model deployment, provider quota, or some other resource before that pressure appears as degradation in your product.
 
 ## Metric model
@@ -58,8 +56,6 @@ Arklow offers two unique modes for identifying relationships with your metrics.
     ```
 
     When a selector matches more series than the policy's maximum-series value allows, or matches several series with no maximum set, Arklow blocks the whole match rather than track a set you did not bound.
-
-    A pinned series grants no delivery authority on its own; authority still comes from proof against the work. A health declaration is the exception: a manual policy that declares what unhealthy means for a series and what recovery means, each with its own threshold and sustain window, establishes the health state directly, and a sustained unhealthy state carries the same verdict authority as a proven relationship. Proof evidence ranks the responses; it does not gate the declared state.
   </Tab>
   <Tab title="Discover">
     Arklow considers the series returned by the query and looks for the ones that consistently describe the action's work.
@@ -71,22 +67,6 @@ Arklow offers two unique modes for identifying relationships with your metrics.
 </Tabs>
 
 The policy's maximum-series value bounds how many series Arklow tracks for that action and query.
-
-## Metric evidence
-
-Correlation nominates a relationship. Authority over delivery requires repeated agreement with the work and with the results of flow changes.
-
-Once a relationship is credible, a fresh metric verdict can add bounded evidence to admission or to a [capacity pool](/resources/capacity-pools/index). The delivery view remains active underneath it.
-
-If collection stops or a series becomes stale, its current verdict expires. A metrics outage removes that additional evidence while delivery continues using the remaining signals.
-
-## Scale target bindings
-
-A [scale target](/resources/scale-targets/index) can bind to one metric query and, when needed, one tag key and value that identify the resource it manages. This is separate from the tag that identifies whose work should be isolated.
-
-For example, `customer_id=C1` can identify the affected work while `model_id=M1` selects the deployment that can grow.
-
-Provider inventory with a matching `model_id` is ordered ahead of unobserved resources. When pressure fires without a matching active target and exactly one visible inventory row matches, Arklow proposes attaching that resource to the pool and metric query. Ambiguous matches remain unselected.
 
 <Columns cols={2}>
   <Card

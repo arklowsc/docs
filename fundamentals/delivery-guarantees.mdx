@@ -3,8 +3,6 @@ title: "Delivery"
 description: ""
 ---
 
-Here's what Arklow can guarantee about delivery.
-
 ## At-least-once delivery
 
 Arklow uses at-least-once delivery. The same action can reach a destination more than once when an acknowledgement is lost, a lease expires, or a retry is requested.
@@ -12,18 +10,6 @@ Arklow uses at-least-once delivery. The same action can reach a destination more
 Each delivery is an attempt. Attempts begin at `0` and increase when Arklow redelivers the action. The action ID remains the same across attempts.
 
 Build consumers to handle repeated delivery safely. Where the work has an external side effect, use the action ID or a stable business identifier as an idempotency key. The attempt number identifies only one delivery of that work; use action-level identity for idempotency.
-
-## Settlement Race Conditions
-
-An acknowledgement, rejection, or deadline extension names both the action and its attempt number. It applies only while that attempt is authoritative.
-
-This prevents a delayed acknowledgement from attempt `0` from completing an action that has already moved on to attempt `1`.
-
-<Tip>
-One pattern to understand if your work is still authoritative is to try send a `Modack`. If it rejects, you can be confident that another attempt may be in progress, and that you should not continue your attempt.
-
-Be careful to not overuse this pattern when other parts of your system may be sending `Modack` as well.
-</Tip>
 
 ## Settlement Verbs
 

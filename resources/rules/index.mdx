@@ -10,7 +10,9 @@ An expression reads the fields covered in [Expressions](/resources/rules/syntax/
 
 ## Evaluation
 
-A rule belongs to one action definition. Before that action dispatches, Arklow evaluates the definition's active rules in priority order, lowest number first. The first rule whose expression is true applies its effect, and evaluation stops.
+A rule belongs to one action definition. Before that action dispatches, Arklow evaluates the definition's active rules in priority order, lowest number first.
+
+Every **Mutate** rule whose expression is true applies, in priority order. For all other effects, the first rule whose expression is true applies its effect, and evaluation stops.
 
 **Priority** controls the order. Give more specific rules a lower number.
 
@@ -20,13 +22,15 @@ A rule belongs to one action definition. Before that action dispatches, Arklow e
 
 Merges tags onto the action. Tags select the [lane](/resources/lanes/index) the action runs in.
 
+If the action already has a tag with the same key, the action keeps its own value.
+
 ```
 payload.tier eq "gold"
 ```
 
-Set **Effect** to **Assign Tags** and add a `priority` tag set to `high`.
+Set **Effect** to **Assign tags** and add a `priority` tag set to `high`.
 
-A tag value can also be read from action metadata. Use that when a source attribute or caller-supplied fact should become part of the action's routing or lane identity.
+Each tag takes its value from **Value** (fixed text), **Metadata** (a path in the action's metadata), or **Payload** (a path in the payload).
 
 ### Mutate
 
@@ -50,7 +54,7 @@ Set **Effect** to **Dispatch** and add a `region` destination tag set to `eu`.
 
 ### Skip
 
-Drops the action from this dispatch.
+Ends the action as canceled, with no delivery.
 
 ```
 tags.env eq "test"
@@ -58,7 +62,7 @@ tags.env eq "test"
 
 ### Terminate
 
-Ends the action.
+Ends the action as failed, with no delivery.
 
 ```
 payload.amount le 0
@@ -79,7 +83,7 @@ Rules are managed on the action definition's **Flow** tab.
     Enter a **Name** and an **Expression**, pick an **Effect**, and set a **Priority**.
   </Step>
   <Step title="Configure the effect">
-    For **Assign Tags**, fill **Tags to assign**. For **Dispatch**, fill **Destination tags to match**. For **Mutate**, add the payload operations in the order they should run.
+    For **Assign tags**, add each tag under **Tags**. For **Dispatch**, fill **Destination tags to match**. For **Mutate**, add the payload operations in the order they should run.
   </Step>
   <Step title="Save">
     Click **Create**.

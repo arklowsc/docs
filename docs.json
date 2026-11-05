@@ -26,15 +26,13 @@
           {
             "group": "Fundamentals",
             "pages": [
-              "fundamentals/overview",
-              "fundamentals/admission-control",
               "fundamentals/delivery-guarantees",
-              "fundamentals/acknowledgement-and-deferral"
+              "fundamentals/acknowledgement-and-deferral",
+              "fundamentals/isolation"
             ]
           },
           {
             "group": "Resources",
-            "root": "resources/index",
             "pages": [
               "resources/actions/index",
               {
@@ -43,21 +41,18 @@
                 "pages": [
                   {
                     "group": "Arklow",
-                    "root": "resources/sources/arklow/index",
                     "pages": [
                       "resources/sources/arklow/ingress"
                     ]
                   },
                   {
                     "group": "AWS",
-                    "root": "resources/sources/aws/index",
                     "pages": [
                       "resources/sources/aws/sqs"
                     ]
                   },
                   {
                     "group": "GCP",
-                    "root": "resources/sources/gcp/index",
                     "pages": [
                       "resources/sources/gcp/pubsub"
                     ]
@@ -70,14 +65,12 @@
                 "pages": [
                   {
                     "group": "HTTP",
-                    "root": "resources/destinations/http/index",
                     "pages": [
                       "resources/destinations/http/webhook"
                     ]
                   },
                   {
                     "group": "GCP",
-                    "root": "resources/destinations/gcp/index",
                     "pages": [
                       "resources/destinations/gcp/pubsub"
                     ]
@@ -91,21 +84,18 @@
                 "pages": [
                   {
                     "group": "HTTP",
-                    "root": "resources/credentials/http/index",
                     "pages": [
                       "resources/credentials/http/auth-headers"
                     ]
                   },
                   {
                     "group": "AWS",
-                    "root": "resources/credentials/aws/index",
                     "pages": [
                       "resources/credentials/aws/access-keys"
                     ]
                   },
                   {
                     "group": "GCP",
-                    "root": "resources/credentials/gcp/index",
                     "pages": [
                       "resources/credentials/gcp/service-account"
                     ]

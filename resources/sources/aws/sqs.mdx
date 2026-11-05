@@ -23,7 +23,7 @@ Uses an [AWS credential](/resources/credentials/aws/access-keys).
     Enter the **Queue URL** and select a **Region**.
   </Step>
   <Step title="Choose how attributes become tags">
-    Leave **Read platform attributes as tags** enabled when SQS message attributes should travel with the action as tags. Disable it when only the message body should shape the work.
+    Leave **Read platform attributes as tags** enabled when SQS message attributes should travel with the action as tags. Disable it when only the message body should shape the work. Attributes of type `String` and `Number` become tags.
   </Step>
   <Step title="Select the credential">
     Under **Authentication**, select the AWS credential.
@@ -32,6 +32,10 @@ Uses an [AWS credential](/resources/credentials/aws/access-keys).
     Click **Create source**.
   </Step>
 </Steps>
+
+## Attributes in rules
+
+A rule reads an attribute at the metadata path `message_attributes.<name>.StringValue`.
 
 ## Deduplication
 

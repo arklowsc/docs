@@ -3,8 +3,6 @@ title: "Acknowledgement"
 description: ""
 ---
 
-Acknowledging work is important to letting Arklow trust one of its [core signals](/fundamentals/admission-control#what-does-admission-weigh).
-
 There are two main patterns we recommend you use that you can tailor for your own use cases.
 
 ## Pattern A: Work is performed synchronously.
@@ -66,16 +64,17 @@ In other words, the same block of code/service that receives the work, is also p
 Arklow allows you to tell it to `Defer` work. Deferring work tells Arklow:
 
 * I have received the work.
-* I will keep telling you I have it.
+* I will keep sending heartbeats to Arklow.
 * Arklow is no longer responsible for redeliveries.
-* If I stop telling you I have it, consider it done.
+* If I stop sending heartbeats, consider it done.
 
 This is useful for long running events that another part of your platform is handling, or would be impractical to handle in the same place as your listener. 
 
-All that is required after `Deferring` is to periodically check in with Arklow using `Modack`. 
+All that is required after `Deferring` is to periodically check in with Arklow using `Modack`. You can use the existing [HTTP API](/api-reference/ingress/post-v1modack), or the Client SDK to perform `Modack`.
+
 
 <Note>
-When using `Defer`, missing the `Modack` lease, or failing to continue doing so results in the work being marked done. For high throughput work, it's recommended that you don't rely upon the expiry of the `Modack` to signal `Ack`, as this can affect the view of the Admission Controller.
+When using `Defer`, missing the `Modack` lease, or failing to continue doing so results in the work being marked done.
 </Note>
 
 

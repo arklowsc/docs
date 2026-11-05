@@ -10,17 +10,6 @@ For example, `orders.created` can be a definition. The order placed by one custo
 
 ## Action definitions
 
-A definition brings together the parts of Arklow that apply to one kind of work:
-
-- The name work arrives under.
-- The schema used to validate its payload.
-- The sources that create records for it.
-- The rules that tag, transform, route, skip, or terminate its records.
-- The destinations where admitted work can be delivered.
-- The metric policies associated with the work.
-
-Definitions are reusable. You configure the flow once, then each accepted record enters under that definition's current contract.
-
 ### Variant
 
 The variant is the definition's canonical name. Use dot notation to describe the domain and event or operation:
@@ -32,27 +21,6 @@ calls.process
 ```
 
 The variant is used by [HTTP ingress](/resources/sources/arklow/ingress), queue sources, rules, and SDK listeners. Treat it as a stable contract with callers.
-
-### Schema
-
-Schemas are optional. When you use them, you can ensure that work entering Arklow matches the required shape, or it is thrown away. We recommend that you rely upon existing schema checks in your pipeline, using this feature only for added protection.
-### Aliases
-
-Aliases can be used to temporarily associated new variant identifiers with the current action. Often this can be useful for migrations, or moving old work to new actions.
-
-<Warning>
-Aliases are meant to be used for migration, or for maintenance reasons. They will take priority over existing Action Variant names. This can cause unintended effects, or deliver work to the work Action.
-</Warning>
-
-### Version
-
-Definitions begin at version `1`. When incoming work omits the version, Arklow uses the current version for that variant. A caller can include the version to assert which current contract it expects.
-
-If a version, for whatever reasons becomes invalid, or unavailable, Arklow will use the latest version.
-
-## Flow configuration
-
-Flow is a UI-only feature that visualizes the entire Action, and all how work moves through it. We recommend that you use it initially to configure your first actions, before moving to API/Terraform based configurations.
 
 ## Lifecycle
 
@@ -78,9 +46,6 @@ An action moves through a small set of public states.
   <Step title="Name the work">
     Create an action in the dashboard and enter a stable variant such as `orders.created`.
   </Step>
-  <Step title="Set the payload contract">
-    Add a JSON Schema, or leave the schema empty when any JSON payload is valid.
-  </Step>
   <Step title="Link a destination">
     Open the action's **Flow** and link the destination that should receive the work. Set the fallback destination as default when the flow has more than one.
   </Step>
@@ -92,9 +57,6 @@ An action moves through a small set of public states.
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
     Create an action and deliver its first record.
-  </Card>
-  <Card title="Admission control" icon="road-barrier" href="/fundamentals/admission-control">
-    See why an action waits before delivery.
   </Card>
   <Card title="Sources" icon="arrow-down-to-line" href="/resources/sources/index">
     Choose where action records enter Arklow.
