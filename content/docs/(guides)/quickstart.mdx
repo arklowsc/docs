@@ -1,0 +1,87 @@
+---
+title: "Quickstart"
+description: ""
+---
+
+<Steps>
+  <Step title="Install the SDK">
+    <Tabs>
+      <Tab title="TypeScript">
+        ```bash
+        npm install @arklow/sdk-ts
+        ```
+      </Tab>
+      <Tab title="Python">
+        ```bash
+        pip install arklow-sdk-py
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Create an action">
+    Create one on the [**New action**](https://app.arklow.io/dashboard/actions/new) page.
+  </Step>
+  <Step title="Link an SDK destination">
+    Add it on the action's **Flow** tab, with the namespace `quickstart`.
+  </Step>
+  <Step title="Start a listener">
+    Create an [API key](https://app.arklow.io/dashboard/settings?tab=keys).
+
+    <Tabs>
+      <Tab title="TypeScript">
+        ```typescript
+        import Listener from "@arklow/sdk-ts/listener";
+
+        const listener = new Listener({ apiKey: process.env.ARKLOW_API_KEY! });
+
+        const running = listener.listen(
+          { namespace: "quickstart" },
+          async (delivery) => {
+            console.log(delivery.variant, delivery.payload);
+            await delivery.ack();
+          },
+        );
+        ```
+      </Tab>
+      <Tab title="Python">
+        ```python
+        import asyncio
+        import os
+
+        from arklow import Listener
+
+
+        async def main() -> None:
+            listener = Listener(api_key=os.environ["ARKLOW_API_KEY"])
+
+            async def handle(delivery) -> None:
+                print(delivery.variant, delivery.payload)
+                await delivery.ack()
+
+            listener.listen(handle, namespace="quickstart", max_outstanding=16)
+            await asyncio.Event().wait()
+
+
+        asyncio.run(main())
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Connect your source">
+    Add your [source](/resources/sources) on the action's **Flow** tab.
+  </Step>
+  <Step title="Send Work">
+    Arklow will now fetch work from your chosen Source, and send it to the Destination you've selected.  
+  </Step>
+</Steps>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="SDK" icon="code" href="/resources/destinations/sdk">
+    Listener options, settlement, leases, and external work.
+  </Card>
+  <Card title="Isolate users" icon="users" href="/fundamentals/isolation">
+    Let Arklow know how to distinguish your users.
+  </Card>
+</CardGroup>

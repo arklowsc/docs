@@ -1,0 +1,108 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+@import 'fumadocs-openapi/css/preset.css';
+
+@theme {
+  --breakpoint-md: 64rem;
+
+  --color-fd-background: #ffffff;
+  --color-fd-foreground: #1e1a17;
+  --color-fd-secondary-foreground: #46423f;
+  --color-fd-muted-foreground: #777370;
+  --color-fd-border: #e6e1df;
+  --color-fd-accent: #f5f1ee;
+  --color-fd-accent-foreground: #1e1a17;
+  --color-fd-primary: #f87116;
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-primary-button: #c2410c;
+
+  --shadow-2xs: 0 0 #0000;
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 0 #0000;
+  --shadow-lg: 0 0 #0000;
+  --shadow-xl: 0 0 #0000;
+  --shadow-2xl: 0 0 #0000;
+}
+
+.dark {
+  --color-fd-background: #0f0d0c;
+  --color-fd-foreground: #f5f1ee;
+  --color-fd-secondary-foreground: #d6d1ce;
+  --color-fd-muted-foreground: #a39e9b;
+  --color-fd-border: #2c2826;
+  --color-fd-accent: #1e1a17;
+  --color-fd-accent-foreground: #f5f1ee;
+  --color-fd-primary: #fb923c;
+  --color-fd-primary-button: #c2410c;
+}
+
+.prose {
+  --tw-prose-body: var(--color-fd-secondary-foreground);
+}
+
+.pele {
+  --pele-font: var(--font-sans);
+  --pele-font-mono: var(--font-mono);
+  --pele-bg: var(--color-fd-background);
+  --pele-fg: var(--color-fd-foreground);
+  --pele-muted: var(--color-fd-muted-foreground);
+  --pele-line: var(--color-fd-muted-foreground);
+  --pele-surface: var(--color-fd-card);
+  --pele-surface-alt: var(--color-fd-secondary);
+  --pele-border: var(--color-fd-border);
+  --pele-accent: var(--color-fd-primary);
+}
+
+.prose a:not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  font-weight: 600;
+}
+
+#nd-subnav > :first-child {
+  height: 4rem;
+  border-bottom-width: 0;
+}
+
+#nd-subnav > :nth-child(2) {
+  height: 3rem;
+}
+
+[data-search-full] {
+  width: 30vw;
+  max-width: 30rem;
+  border-color: var(--color-fd-accent);
+  border-radius: 0.75rem;
+  background-color: var(--color-fd-background);
+}
+
+#nd-notebook-layout {
+  @variant md {
+    --fd-sidebar-width: 20rem;
+  }
+}
+
+#nd-sidebar [data-id$='-viewport'] {
+  padding-inline: 2rem;
+}
+
+#nd-sidebar p {
+  font-weight: 600;
+}
+
+#nd-sidebar a {
+  border-radius: 0.75rem;
+}
+
+#nd-sidebar a:not([data-active='true']) {
+  color: var(--color-fd-secondary-foreground);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}

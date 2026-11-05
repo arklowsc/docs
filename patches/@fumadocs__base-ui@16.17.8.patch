@@ -1,0 +1,13 @@
+diff --git a/dist/components/sidebar/base.js b/dist/components/sidebar/base.js
+index 1db7aa9d9ac120ea363d99dee41c2693934b8124..00c1b4b13222e4439f88f98d4f6544b790c27130 100644
+--- a/dist/components/sidebar/base.js
++++ b/dist/components/sidebar/base.js
+@@ -41,7 +41,7 @@ function SidebarProvider({ defaultOpenLevel = 0, prefetch, collapsible = true, c
+ 	const [open, setOpen] = useState(false);
+ 	const [collapsed, setCollapsed] = useState(false);
+ 	const pathname = usePathname();
+-	const mode = useMediaQuery("(width < 768px)") ? "drawer" : "full";
++	const mode = useMediaQuery("(width < 1024px)") ? "drawer" : "full";
+ 	useOnChange(pathname, () => {
+ 		if (closeOnRedirect.current) setOpen(false);
+ 		closeOnRedirect.current = true;
