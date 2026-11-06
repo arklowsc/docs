@@ -10,7 +10,7 @@ Every destination belongs to a pool. A new destination begins in a standalone po
 
 ## Standalone and shared pools
 
-A standalone pool keeps one destination's capacity separate from every other destination. This is the right default when a destination has its own scaling boundary.
+A standalone pool keeps one destination's capacity separate from every other destination.
 
 A shared pool represents one physical supply of capacity behind several destinations. When that supply is constrained, Arklow evaluates demand from every member against their shared capacity.
 
@@ -36,8 +36,6 @@ A destination belongs to one pool for each resource its work draws from. Add it 
     Open the pool to add or remove the other destinations that draw from its resource.
   </Step>
 </Steps>
-
-Removing a destination from a pool removes only that membership. A destination removed from its last pool gets a new standalone pool.
 
 You can remove the last destination from a pool that still has scale targets. The pool's pressure clears and its targets settle to their minimum replicas. The pool remains, so you can add members again, or delete it once no scale targets are attached.
 
