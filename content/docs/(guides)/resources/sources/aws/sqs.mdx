@@ -4,7 +4,7 @@ description: ""
 hideFooterPagination: true
 ---
 
-The SQS source pulls work from an Amazon SQS queue. Each message becomes one run: the message body is the payload.
+The SQS source pulls work from an Amazon SQS queue.
 
 ## Credentials
 
@@ -23,7 +23,7 @@ Uses an [AWS credential](/resources/credentials/aws/access-keys).
     Enter the **Queue URL** and select a **Region**.
   </Step>
   <Step title="Choose how attributes become tags">
-    Leave **Read platform attributes as tags** enabled when SQS message attributes should travel with the run as tags. Disable it when only the message body should shape the work. Attributes of type `String` and `Number` become tags.
+    Leave **Read platform attributes as tags** enabled to allow Arklow to read Attributes as tags. Only Attributes of type `String` and `Number` become tags.
   </Step>
   <Step title="Select the credential">
     Under **Authentication**, select the AWS credential.
@@ -33,10 +33,6 @@ Uses an [AWS credential](/resources/credentials/aws/access-keys).
   </Step>
 </Steps>
 
-## Attributes in rules
+## Rules
 
-A rule reads an attribute at the metadata path `message_attributes.<name>.StringValue`.
-
-## Deduplication
-
-Runs are keyed to the source message, so an SQS redelivery resolves to the original run.
+Rules can read attributes at the metadata path `attributes.<name>`.

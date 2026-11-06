@@ -4,7 +4,7 @@ description: ""
 hideFooterPagination: true
 ---
 
-The Pub/Sub source pulls work from a Google Cloud Pub/Sub subscription. Each message becomes one run: the message data is the payload.
+The Pub/Sub source pulls work from a Google Cloud Pub/Sub subscription.
 
 ## Credentials
 
@@ -23,7 +23,7 @@ Uses a [GCP Service Account credential](/resources/credentials/gcp/service-accou
     Enter the **Project ID** and **Subscription ID**.
   </Step>
   <Step title="Choose how attributes become tags">
-    Leave **Read platform attributes as tags** enabled when Pub/Sub message attributes should travel with the run as tags. Disable it when only the message data should shape the work.
+    Leave **Read platform attributes as tags** enabled to allow Arklow to read Attributes as tags. Only Attributes of type `String` and `Number` become tags.
   </Step>
   <Step title="Select the credential">
     Under **Authentication**, select the GCP Service Account credential.
@@ -33,10 +33,6 @@ Uses a [GCP Service Account credential](/resources/credentials/gcp/service-accou
   </Step>
 </Steps>
 
-## Attributes in rules
+## Rules
 
-A rule reads an attribute at the metadata path `attributes.<name>`.
-
-## Deduplication
-
-Runs are keyed to the source message, so a Pub/Sub redelivery resolves to the original run.
+Rules can read attributes at the metadata path `attributes.<name>`.

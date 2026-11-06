@@ -11,9 +11,11 @@ POST https://ingress.arklow.io/v1/ingress/{variant}
 POST https://ingress.arklow.io/v1/ingress
 ```
 
-## Send the payload as the body
+You can choose to provide Arklow fields as query strings, or alongside your payload.
 
-Put the variant in the path. Arklow uses the request body as the payload.
+## Using Query Strings
+
+Use this form when the system that sends the request cannot change the shape of its body.
 
 ```bash
 curl -X POST "https://ingress.arklow.io/v1/ingress/orders.created?tag.region=eu" \
@@ -22,13 +24,11 @@ curl -X POST "https://ingress.arklow.io/v1/ingress/orders.created?tag.region=eu"
   -d '{"order_id": "8471", "total": 129.50}'
 ```
 
-Each `tag.<key>=<value>` query parameter adds a tag to the run. Use this form when the system that sends the request cannot change the shape of its body.
+Each `tag.<key>=<value>` query parameter adds a tag.
 
-If the body is a JSON object with a `payload` field, Arklow reads the body as an [envelope](#send-an-envelope).
+If the body is a JSON object with a `payload` field in the root, Arklow reads the body as the payload, as below.
 
-## Send an envelope
-
-Leave the variant out of the path, and put the run details in the body.
+## Using the Payload Body
 
 ```bash
 curl -X POST "https://ingress.arklow.io/v1/ingress" \
@@ -36,47 +36,6 @@ curl -X POST "https://ingress.arklow.io/v1/ingress" \
   -H "Content-Type: application/json" \
   -d '{"variant": "orders.created", "tags": {"region": "eu"}, "payload": {"order_id": "8471", "total": 129.50}}'
 ```
-
-| Field | Required | Value |
-|---|---|---|
-| `variant` | Yes | The variant of the action |
-| `payload` | Yes | The work, as JSON |
-| `tags` | No | Tags, as string keys and string values |
-| `metadata` | No | JSON that rules can read |
-| `version` | No | The version of the action |
-| `timeout` | No | The run timeout in seconds, from `1` to `86400`. The default is `86400`. |
-
-A `tag.<key>` query parameter replaces a body tag with the same key.
-
-## Response
-
-A `200` response holds the new action:
-
-```json
-{
-  "data": {
-    "a_id": "247001",
-    "a_def_id": "35990835707470769",
-    "queue_s": "queued",
-    "a_va": "orders.created",
-    "a_ve": "1"
-  }
-}
-```
-
-| Field | Value |
-|---|---|
-| `a_id` | The run identifier |
-| `a_def_id` | The action identifier |
-| `queue_s` | The status of the run after intake |
-| `a_va` | The variant |
-| `a_ve` | The version |
-
-A `400` response gives the reason in `errors[].code`, for example `INVALID_PAYLOAD` or `TAG_CARDINALITY_EXCEEDED`.
-
-<Note>
-Each accepted request creates a new run, even when two requests carry the same payload. [Source deduplication](/fundamentals/delivery-guarantees#source-deduplication) applies only to queue sources.
-</Note>
 
 ## Reference
 
