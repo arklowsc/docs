@@ -26,7 +26,7 @@ curl -X POST "https://ingress.arklow.io/v1/ingress/orders.created?tag.region=eu"
 
 Each `tag.<key>=<value>` query parameter adds a tag.
 
-If the body is a JSON object with a `payload` field in the root, Arklow reads the body as the payload, as below.
+If the body is a JSON object with a `payload` field in the root, Arklow reads the `payload` field as the payload, as below.
 
 ## Using the Payload Body
 
