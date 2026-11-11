@@ -126,5 +126,5 @@ curl -X POST https://ingress.arklow.io/v1/ack \
 ```
 
 <Note>
-After using a `Defer`, `NACK` / `No Acknowledgement` won't be accepted. Deferring work signals to Arklow that you are taking custody of the work, and will not be expecting redelivery.
+After using a `Defer`, Arklow will not accept a `NACK` / `No Acknowledgement` that asks for a retry. Deferring work signals to Arklow that you are taking custody of the work, and will not be expecting redelivery. To mark the run as failed, send a `NACK` with `retry` set to `false`.
 </Note>
