@@ -72,7 +72,7 @@ const running = listener.listen(
 
 A handler that returns acks the delivery, and a handler that throws nacks it. The first explicit acknowledgement or rejection takes precedence over the handler result.
 
-After `defer()`, the handler result has no effect, and `nack()` throws an error.
+After `defer()`, the handler result has no effect. Any `nack()` call other than `nack({ retry: false })` throws an error.
 
 Until you settle or defer a delivery, the listener renews its lease up to the run timeout. Call `extend()` to move the deadline by a known amount.
 
