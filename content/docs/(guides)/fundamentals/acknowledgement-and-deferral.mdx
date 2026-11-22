@@ -14,50 +14,25 @@ When you use this pattern, acknowledging work says to Arklow:
 
 In other words, the same block of code/service that receives the work, is also performing and acknowledging the outcome of that work.
 
-<Tabs>
-  <Tab title="SDK">
-    The handler performs the work, then tells Arklow the work is done.
+The handler performs the work, then tells Arklow the work is done.
 
-    ```typescript
-    // Other SDK languages follow the same form.
-    const running = listener.listen(
-      { namespace: "billing" },
-      async (delivery) => {
-        await processInvoice(delivery.payload);
-        await delivery.ack();
-      },
-    );
-    ```
-    While the handler is open, the client renews the claim's lease automatically, up to the run timeout. `extend()` sends an explicit `Modack` when you want the deadline moved by a known amount:
+```typescript
+// Other SDK languages follow the same form.
+const running = listener.listen(
+  { namespace: "billing" },
+  async (delivery) => {
+    await processInvoice(delivery.payload);
+    await delivery.ack();
+  },
+);
+```
+While the handler is open, the client renews the claim's lease automatically, up to the run timeout. `extend()` sends an explicit `Modack` when you want the deadline moved by a known amount:
 
-    ```typescript
-    await delivery.extend(120_000);
-    ```
+```typescript
+await delivery.extend(120_000);
+```
 
-    A handler that returns cleanly acks on its own. A handler that fails with an error, or a lease that expires after a crash, will trigger a redelivery.
-  </Tab>
-  <Tab title="HTTP">
-    See the [Webhook](/resources/destinations/http/webhook) destination to learn more.
-
-    To acknowledge work, you will reply with:
-    ```http
-    HTTP/1.1 200 OK
-    x-arklow-signaling: ack
-    ```
-
-    If the work needs more time than the request can hold open, respond with `mod_ack` and settle later through [POST /v1/ack](/api-reference/ingress/post-v1ack), using the delivery's `x-arklow-actionid` and `x-arklow-attempt`:
-
-    ```http
-    HTTP/1.1 200 OK
-    x-arklow-signaling: mod_ack
-    x-arklow-signaling-val: 120
-    ```
-
-    The run stays unsettled for the value in seconds.
-
-    An endpoint that returns without sending acks, whether due to an error or timeout, will trigger a redelivery.
-  </Tab>
-</Tabs>
+A handler that returns cleanly acks on its own. A handler that fails with an error, or a lease that expires after a crash, will trigger a redelivery.
 
 ## Pattern B: Work is performed asynchronously.
 
@@ -78,36 +53,22 @@ When using `Defer`, missing the `Modack` lease, or failing to continue doing so 
 </Note>
 
 
-<Tabs>
-  <Tab title="SDK">
-    Hand the work off, then defer the delivery.
+Hand the work off, then defer the delivery.
 
-    ```typescript
-    // Other SDK languages follow the same form.
-    listener.listen(
-      { namespace: "billing" },
-      async (delivery) => {
-        await invoicePipeline.submit({
-          actionRecordId: delivery.actionRecordId,
-          attempt: delivery.attempt,
-          payload: delivery.payload,
-        });
-        await delivery.defer();
-      },
-    );
-    ```
-  </Tab>
-  <Tab title="HTTP">
-    Respond to the delivery without an ack, then defer through the ingress API using the `x-arklow-actionid` and `x-arklow-attempt` from the request. A response that acks settles the attempt and cannot be deferred.
-
-    ```bash
-    curl -X POST https://ingress.arklow.io/v1/defer \
-      -H "X-Arklow-Auth: $ARKLOW_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{"action_record_id": "247001", "attempt": 0}'
-    ```
-  </Tab>
-</Tabs>
+```typescript
+// Other SDK languages follow the same form.
+listener.listen(
+  { namespace: "billing" },
+  async (delivery) => {
+    await invoicePipeline.submit({
+      actionRecordId: delivery.actionRecordId,
+      attempt: delivery.attempt,
+      payload: delivery.payload,
+    });
+    await delivery.defer();
+  },
+);
+```
 
 ### After the defer
 

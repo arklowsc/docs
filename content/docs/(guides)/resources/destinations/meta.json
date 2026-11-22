@@ -1,4 +1,4 @@
 {
   "title": "Destinations",
-  "pages": ["http", "gcp", "sdk"]
+  "pages": ["gcp", "sdk"]
 }
